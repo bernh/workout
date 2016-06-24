@@ -1,0 +1,6 @@
+[package]
+name = "workout"
+version = "0.1.0"
+authors = ["Bernhard Leiner <bleiner@gmail.com>"]
+
+[dependencies]
