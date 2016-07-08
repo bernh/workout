@@ -1,11 +1,13 @@
 use std::mem;
 
+mod crc16;
+
 // constants
-const FIT_FILE_HDR_SIZE : usize = 14;
+pub const fit_file_hdr_size : usize = 14;
 
 #[derive(Clone, Debug)]
 #[repr(packed)]
-pub struct Fit_File_Header {
+pub struct FitFileHeader {
     pub header_size: u8,
     pub protocol_version: u8,
     pub profile_version: u16,
@@ -14,15 +16,15 @@ pub struct Fit_File_Header {
     pub crc: u16 // CRC of this file header in little endian format.
 }
 
-impl Fit_File_Header {
+impl FitFileHeader {
 
-    pub fn new() -> Fit_File_Header {
-        let FIT_PROTOCOL_VERSION_MAJOR_SHIFT = 4;
-        let FIT_PROTOCOL_VERSION_20 = (( 2 << FIT_PROTOCOL_VERSION_MAJOR_SHIFT ) | 0 );
+    pub fn new() -> FitFileHeader {
+        let fit_protocol_version_major_shift = 4;
+        let fit_protocol_version_20 = 2 << fit_protocol_version_major_shift;
 
-        Fit_File_Header {
-            header_size: 14,
-            protocol_version: FIT_PROTOCOL_VERSION_20,
+        FitFileHeader {
+            header_size: fit_file_hdr_size as u8,  // TODO test is corresponding to sizeof()
+            protocol_version: fit_protocol_version_20,
             profile_version: 2,
             data_size: 0,
             data_type: [46, 70, 73, 84 ], // ".FIT"
@@ -30,8 +32,24 @@ impl Fit_File_Header {
         }
     }
 
-    pub fn bin(&self) -> [u8; FIT_FILE_HDR_SIZE] {
+    pub fn bin(&self) -> [u8; fit_file_hdr_size] {
         unsafe { mem::transmute(self.clone()) }
+    }
+
+    pub fn calc_crc(&mut self) {
+        let bytes = self.bin();
+        self.crc = crc16::FitCRC_Update16(0, &bytes[.. bytes.len() -2]);
     }
 }
 
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::mem;
+
+    #[test]
+    fn FitFileHeader_size() {
+        assert_eq!(fit_file_hdr_size, mem::size_of::<FitFileHeader>());
+    }
+}
