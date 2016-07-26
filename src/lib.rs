@@ -3,7 +3,7 @@ use std::mem;
 mod crc16;
 
 // constants
-pub const fit_file_hdr_size : usize = 14;
+pub const FIT_FILE_HDR_SIZE : usize = 14;
 
 #[derive(Clone, Debug)]
 #[repr(packed)]
@@ -23,7 +23,7 @@ impl FitFileHeader {
         let fit_protocol_version_20 = 2 << fit_protocol_version_major_shift;
 
         FitFileHeader {
-            header_size: fit_file_hdr_size as u8,  // TODO test is corresponding to sizeof()
+            header_size: FIT_FILE_HDR_SIZE as u8,  // TODO test is corresponding to sizeof()
             protocol_version: fit_protocol_version_20,
             profile_version: 2,
             data_size: 0,
@@ -32,13 +32,13 @@ impl FitFileHeader {
         }
     }
 
-    pub fn bin(&self) -> [u8; fit_file_hdr_size] {
+    pub fn bin(&self) -> [u8; FIT_FILE_HDR_SIZE] {
         unsafe { mem::transmute(self.clone()) }
     }
 
     pub fn calc_crc(&mut self) {
         let bytes = self.bin();
-        self.crc = crc16::FitCRC_Update16(0, &bytes[.. bytes.len() -2]);
+        self.crc = crc16::fit_crc_update16(0, &bytes[.. bytes.len() -2]);
     }
 }
 
@@ -50,6 +50,6 @@ mod tests {
 
     #[test]
     fn FitFileHeader_size() {
-        assert_eq!(fit_file_hdr_size, mem::size_of::<FitFileHeader>());
+        assert_eq!(FIT_FILE_HDR_SIZE, mem::size_of::<FitFileHeader>());
     }
 }
