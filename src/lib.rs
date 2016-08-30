@@ -1,6 +1,7 @@
 use std::mem;
 
 mod crc16;
+pub mod wtree;  // TODO: remove pub
 
 // constants
 pub const FIT_FILE_HDR_SIZE: usize = 14;
@@ -8,12 +9,12 @@ pub const FIT_FILE_HDR_SIZE: usize = 14;
 #[derive(Clone, Debug)]
 #[repr(packed)]
 pub struct FitFileHeader {
-    pub header_size: u8,
-    pub protocol_version: u8,
-    pub profile_version: u16,
-    pub data_size: u32, // Does not include file header or crc.  Little endian format.
-    pub data_type: [u8; 4], // ".FIT"
-    pub crc: u16, // CRC of this file header in little endian format.
+    header_size: u8,
+    protocol_version: u8,
+    profile_version: u16,
+    data_size: u32, // Does not include file header or crc.  Little endian format.
+    data_type: [u8; 4], // ".FIT"
+    crc: u16, // CRC of this file header in little endian format.
 }
 
 impl FitFileHeader {

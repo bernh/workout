@@ -29,5 +29,7 @@ fn main()
     header.calc_crc();
     let array = header.bin();
     println!("{:?}", array);
-    write_file(&array, Path::new("workout.fit"))
+    write_file(&array, Path::new("workout.fit"));
+
+    workout::wtree::debug_test(); 
 }
