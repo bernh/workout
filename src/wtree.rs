@@ -7,19 +7,29 @@ enum RunType {
 #[derive(Debug)]
 pub struct Run {
     rtype: RunType,
-    speed: f32,      // m/s
-    time: f32,      // s
-    distance: f32,  // m
+    speed: f32, // m/s
+    time: f32, // s
+    distance: f32, // m
 }
 
 impl Run {
     pub fn distance(distance: f32, speed: f32) -> Run {
         let time = distance / speed;
-        Run {rtype: RunType::Distance, speed: speed, time: time, distance: distance}
+        Run {
+            rtype: RunType::Distance,
+            speed: speed,
+            time: time,
+            distance: distance,
+        }
     }
     pub fn time(time: f32, speed: f32) -> Run {
         let distance = time * speed;
-        Run {rtype: RunType::Time, speed: speed, time: time, distance: distance}
+        Run {
+            rtype: RunType::Time,
+            speed: speed,
+            time: time,
+            distance: distance,
+        }
     }
 }
 
@@ -49,7 +59,7 @@ pub fn debug_test() {
 #[cfg(test)]
 #[test]
 fn construct() {
-    // 1 E + 2 * (1 T + 1 min rest) + 3 * (3 min H + 2 min jg) 
+    // 1 E + 2 * (1 T + 1 min rest) + 3 * (3 min H + 2 min jg)
     // + 4 * (200 R + 200 jg) + 1 E
     assert_eq!(1, 1);
 }

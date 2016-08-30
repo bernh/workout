@@ -6,7 +6,7 @@ use std::io::Write;
 extern crate workout;
 
 
-fn write_file(data: &[u8], path : &Path) {
+fn write_file(data: &[u8], path: &Path) {
     let mut file = match File::create(&path) {
         Err(why) => {
             panic!("couldn't create {}: {}",
@@ -23,13 +23,12 @@ fn write_file(data: &[u8], path : &Path) {
 }
 
 
-fn main() 
-{
+fn main() {
     let mut header = workout::FitFileHeader::new();
     header.calc_crc();
     let array = header.bin();
     println!("{:?}", array);
     write_file(&array, Path::new("workout.fit"));
 
-    workout::wtree::debug_test(); 
+    workout::wtree::debug_test();
 }
