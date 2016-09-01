@@ -4,16 +4,34 @@ enum RunType {
     Time,
 }
 
+trait Distance_and_Time {
+    fn time(&self) -> f32;
+    fn distance(&self) -> f32;
+}
+
 #[derive(Debug)]
 pub struct Run {
-    rtype: RunType,
+    rtype: RunType,  // TODO needed?
     speed: f32, // m/s
     time: f32, // s
     distance: f32, // m
 }
 
+#[derive(Debug)]
+pub struct Workout {
+    reps: usize,
+    nodes: Vec<Node>,
+}
+
+#[derive(Debug)]
+pub enum Node {
+    // TODO remove pub
+    Nested(Workout),
+    Step(Run),
+}
+
 impl Run {
-    pub fn distance(distance: f32, speed: f32) -> Run {
+    pub fn from_distance(distance: f32, speed: f32) -> Run {
         let time = distance / speed;
         Run {
             rtype: RunType::Distance,
@@ -22,7 +40,7 @@ impl Run {
             distance: distance,
         }
     }
-    pub fn time(time: f32, speed: f32) -> Run {
+    pub fn from_time(time: f32, speed: f32) -> Run {
         let distance = time * speed;
         Run {
             rtype: RunType::Time,
@@ -33,11 +51,13 @@ impl Run {
     }
 }
 
-
-#[derive(Debug)]
-pub struct Workout {
-    reps: usize,
-    nodes: Vec<Node>,
+impl Distance_and_Time for Run {
+    fn time(&self) -> f32 {
+        self.time
+    }
+    fn distance(&self) -> f32 {
+        self.distance
+    }
 }
 
 impl Workout {
@@ -52,44 +72,54 @@ impl Workout {
         self.nodes.push(node);
     }
 
-    pub fn distance(&self) -> f32 {
-        // TODO total distance of workout
-        0.0
-    }
-
-    pub fn time(&self) -> f32 {
-        // TODO total time
-        1.0
-    }
-
     pub fn pace(&self) -> String {
         // TODO average pace
-        speed2pace(self.distance() / self.time())
+        "3:00".to_string()
     }
 }
 
-#[derive(Debug)]
-pub enum Node {
-    // TODO remove pub
-    Nested(Workout),
-    Step(Run),
+impl Distance_and_Time for Workout {
+    fn time(&self) -> f32 {
+        self.reps as f32 * self.nodes.iter().fold(0.0, |acc, ref x| acc + x.time())
+    }
+    fn distance(&self) -> f32 {
+        self.reps as f32 * self.nodes.iter().fold(0.0, |acc, ref x| acc + x.distance())
+    }
 }
 
+// TODO this is overly complex! 
+impl Distance_and_Time for Node {
+    fn time(&self) -> f32 {
+        match self {
+            &Node::Nested(ref w) => w.time(),
+            &Node::Step(ref r)   => r.time(),
+        }
+    }
+    fn distance(&self) -> f32 {
+        match self {
+            &Node::Nested(ref w) => w.distance(),
+            &Node::Step(ref r)   => r.distance(),
+        }
+    }
+}
 
 
 pub fn debug_test() {
     let t = Workout {
         reps: 1,
-        nodes: vec![Node::Step(Run::distance(1.0, 2.0)),
-                    Node::Step(Run::time(34.0, 2.4)),
+        nodes: vec![Node::Step(Run::from_distance(1.0, 2.0)),
+                    Node::Step(Run::from_time(34.0, 2.4)),
                     Node::Nested(Workout{
                         reps: 2,
-                        nodes: vec![Node::Step(Run::distance(1.0, 2.0))]}),
+                        nodes: vec![Node::Step(Run::from_distance(1.0, 2.0))]}),
         ],
     };
-    let mut t2 = Workout::new(1);
-    t2.add(Node::Step(Run::distance(1.0, 2.0)));
+    let mut t2 = Workout::new(2);
+    t2.add(Node::Step(Run::from_distance(1000.0, pace2speed("5:00".to_string()))));
+    t2.add(Node::Step(Run::from_time(240 as f32, pace2speed("4:00".to_string()))));
     println!("Workout: {:?}", t2);
+    println!("    total time: {}", t2.time());
+    println!("    total distance: {}", t2.distance());
 }
 
 fn pace2speed(pace: String) -> f32 {
