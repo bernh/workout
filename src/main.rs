@@ -29,6 +29,4 @@ fn main() {
     let array = header.bin();
     println!("{:?}", array);
     write_file(&array, Path::new("workout.fit"));
-
-    workout::wtree::debug_test();
 }

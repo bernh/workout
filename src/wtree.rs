@@ -11,7 +11,7 @@ pub trait Distance_and_Time {
 
 #[derive(Debug)]
 pub struct Run {
-    rtype: RunType,  // not really needed but nice nevertheless for better FIT files
+    rtype: RunType, // not really needed but nice nevertheless for better FIT files
     speed: f32, // m/s
     time: f32, // s
     distance: f32, // m
@@ -79,15 +79,6 @@ impl Distance_and_Time for Workout {
     }
 }
 
-
-pub fn debug_test() {
-    let mut t2 = Workout::new(2);
-    t2.add(Run::from_distance(1000.0, pace2speed("5:00".to_string())));
-    t2.add(Run::from_time(240.0, pace2speed("4:00".to_string())));
-    println!("    total time: {}", t2.time());
-    println!("    total distance: {}", t2.distance());
-}
-
 fn pace2speed(pace: String) -> f32 {
     // pace is min:sec per kilometer, speed is m/s
     let values: Vec<_> = pace.split(":").collect();
@@ -117,14 +108,14 @@ fn pace_speed_convert() {
     assert_eq!(speed2pace(2.778), "5:59");
 }
 
-// #[test]
-// fn totals() {
-//     let mut t2 = Workout::new(2);
-//     t2.add(Node::Step(Run::from_distance(1000.0, pace2speed("5:00".to_string()))));
-//     t2.add(Node::Step(Run::from_time(240 as f32, pace2speed("4:00".to_string()))));
-//     assert_delta!(t2.time(), 1080.0, 0.1);
-//     assert_delta!(t2.distance(), 4000.0, 0.1);
-// }
+#[test]
+fn totals() {
+    let mut t = Workout::new(2);
+    t.add(Run::from_distance(1000.0, pace2speed("5:00".to_string())));
+    t.add(Run::from_time(240.0, pace2speed("4:00".to_string())));
+    assert_delta!(t.time(), 1080.0, 0.1);
+    assert_delta!(t.distance(), 4000.0, 0.1);
+}
 
 #[test]
 fn construct() {
