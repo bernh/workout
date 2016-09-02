@@ -4,30 +4,22 @@ enum RunType {
     Time,
 }
 
-trait Distance_and_Time {
+pub trait Distance_and_Time {
     fn time(&self) -> f32;
     fn distance(&self) -> f32;
 }
 
 #[derive(Debug)]
 pub struct Run {
-    rtype: RunType,  // TODO needed?
+    rtype: RunType,  // not really needed but nice nevertheless for better FIT files
     speed: f32, // m/s
     time: f32, // s
     distance: f32, // m
 }
 
-#[derive(Debug)]
 pub struct Workout {
     reps: usize,
-    nodes: Vec<Node>,
-}
-
-#[derive(Debug)]
-pub enum Node {
-    // TODO remove pub
-    Nested(Workout),
-    Step(Run),
+    nodes: Vec<Box<Distance_and_Time>>,
 }
 
 impl Run {
@@ -68,8 +60,8 @@ impl Workout {
         }
     }
 
-    pub fn add(&mut self, node: Node) {
-        self.nodes.push(node);
+    pub fn add<T: Distance_and_Time + 'static>(&mut self, node: T) {
+        self.nodes.push(Box::new(node));
     }
 
     pub fn pace(&self) -> String {
@@ -87,37 +79,11 @@ impl Distance_and_Time for Workout {
     }
 }
 
-// TODO this is overly complex! 
-impl Distance_and_Time for Node {
-    fn time(&self) -> f32 {
-        match self {
-            &Node::Nested(ref w) => w.time(),
-            &Node::Step(ref r)   => r.time(),
-        }
-    }
-    fn distance(&self) -> f32 {
-        match self {
-            &Node::Nested(ref w) => w.distance(),
-            &Node::Step(ref r)   => r.distance(),
-        }
-    }
-}
-
 
 pub fn debug_test() {
-    let t = Workout {
-        reps: 1,
-        nodes: vec![Node::Step(Run::from_distance(1.0, 2.0)),
-                    Node::Step(Run::from_time(34.0, 2.4)),
-                    Node::Nested(Workout{
-                        reps: 2,
-                        nodes: vec![Node::Step(Run::from_distance(1.0, 2.0))]}),
-        ],
-    };
     let mut t2 = Workout::new(2);
-    t2.add(Node::Step(Run::from_distance(1000.0, pace2speed("5:00".to_string()))));
-    t2.add(Node::Step(Run::from_time(240 as f32, pace2speed("4:00".to_string()))));
-    println!("Workout: {:?}", t2);
+    t2.add(Run::from_distance(1000.0, pace2speed("5:00".to_string())));
+    t2.add(Run::from_time(240.0, pace2speed("4:00".to_string())));
     println!("    total time: {}", t2.time());
     println!("    total distance: {}", t2.distance());
 }
@@ -150,6 +116,15 @@ fn pace_speed_convert() {
     assert_delta!(pace2speed("6:00".to_string()), 10.0 / 3.6, 0.1);
     assert_eq!(speed2pace(2.778), "5:59");
 }
+
+// #[test]
+// fn totals() {
+//     let mut t2 = Workout::new(2);
+//     t2.add(Node::Step(Run::from_distance(1000.0, pace2speed("5:00".to_string()))));
+//     t2.add(Node::Step(Run::from_time(240 as f32, pace2speed("4:00".to_string()))));
+//     assert_delta!(t2.time(), 1080.0, 0.1);
+//     assert_delta!(t2.distance(), 4000.0, 0.1);
+// }
 
 #[test]
 fn construct() {
