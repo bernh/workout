@@ -4,7 +4,7 @@ enum RunType {
     Time,
 }
 
-pub trait Distance_and_Time {
+pub trait DistanceAndTime {
     fn time(&self) -> f32;
     fn distance(&self) -> f32;
 }
@@ -19,7 +19,7 @@ pub struct Run {
 
 pub struct Workout {
     reps: usize,
-    nodes: Vec<Box<Distance_and_Time>>,
+    nodes: Vec<Box<DistanceAndTime>>,
 }
 
 impl Run {
@@ -43,7 +43,7 @@ impl Run {
     }
 }
 
-impl Distance_and_Time for Run {
+impl DistanceAndTime for Run {
     fn time(&self) -> f32 {
         self.time
     }
@@ -60,7 +60,7 @@ impl Workout {
         }
     }
 
-    pub fn add<T: Distance_and_Time + 'static>(&mut self, node: T) {
+    pub fn add<T: DistanceAndTime + 'static>(&mut self, node: T) {
         self.nodes.push(Box::new(node));
     }
 
@@ -70,7 +70,7 @@ impl Workout {
     }
 }
 
-impl Distance_and_Time for Workout {
+impl DistanceAndTime for Workout {
     fn time(&self) -> f32 {
         self.reps as f32 * self.nodes.iter().fold(0.0, |acc, ref x| acc + x.time())
     }
