@@ -1,5 +1,5 @@
-#[derive(Debug)]
-enum RunType {
+#[derive(Debug,Clone)]
+pub enum RunType {
     Distance,
     Time,
 }
@@ -9,12 +9,12 @@ pub trait DistanceAndTime {
     fn distance(&self) -> f32;
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Run {
-    rtype: RunType, // not really needed but nice nevertheless for better FIT files
-    speed: f32, // m/s
-    time: f32, // s
-    distance: f32, // m
+    pub rtype: RunType, // not really needed but nice nevertheless for better FIT files
+    pub speed: f32, // m/s
+    pub time: f32, // s
+    pub distance: f32, // m
 }
 
 pub struct Workout {

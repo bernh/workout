@@ -30,5 +30,4 @@ fn main() {
     // println!("{:?}", array);
     // write_file(&array, Path::new("workout.fit"));
 
-    println!("{:?}", workout::JD_grammar::parse_Step("3E"));
 }
