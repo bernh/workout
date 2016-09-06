@@ -24,9 +24,11 @@ fn write_file(data: &[u8], path: &Path) {
 
 
 fn main() {
-    let mut header = workout::FitFileHeader::new();
-    header.calc_crc();
-    let array = header.bin();
-    println!("{:?}", array);
-    write_file(&array, Path::new("workout.fit"));
+    // let mut header = workout::FitFileHeader::new();
+    // header.calc_crc();
+    // let array = header.bin();
+    // println!("{:?}", array);
+    // write_file(&array, Path::new("workout.fit"));
+
+    println!("{:?}", workout::JD_grammar::parse_Step("3E"));
 }

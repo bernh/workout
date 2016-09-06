@@ -2,6 +2,8 @@ use std::mem;
 
 mod crc16;
 pub mod wtree;  // TODO: remove pub
+mod parse;
+pub mod JD_grammar;
 
 // constants
 pub const FIT_FILE_HDR_SIZE: usize = 14;
