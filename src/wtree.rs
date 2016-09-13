@@ -18,8 +18,8 @@ pub struct Run {
 }
 
 pub struct Workout {
-    reps: usize,
-    nodes: Vec<Box<DistanceAndTime>>,
+    pub reps: i32,
+    pub nodes: Vec<Box<DistanceAndTime>>,
 }
 
 impl Run {
@@ -53,7 +53,7 @@ impl DistanceAndTime for Run {
 }
 
 impl Workout {
-    pub fn new(reps: usize) -> Workout {
+    pub fn new(reps: i32) -> Workout {
         Workout {
             reps: reps,
             nodes: Vec::new(),

@@ -2,3 +2,4 @@ target
 Cargo.lock
 *.fit
 *.bk
+src/jd_grammar.rs

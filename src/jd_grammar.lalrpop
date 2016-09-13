@@ -1,0 +1,58 @@
+use wtree::{Run, Workout, DistanceAndTime};
+
+grammar;
+
+pub Workout_main : Workout = {
+    <p:Parts>  => { 
+        let mut w = Workout::new(1);
+        w.nodes = p;
+        w
+    },
+};
+
+pub Parts : Vec<Box<DistanceAndTime>> = {
+    <p:Part> => vec![p],
+    <l:Parts> "+" <r:Part> => {
+        let mut l = l;
+        l.push(r);
+        l
+    }
+};
+
+pub Part : Box<DistanceAndTime> = {
+    <s:Step> => Box::new(s),
+    <w:Workout> => Box::new(w),
+};
+
+pub Workout : Workout = {
+    <n:Num> "*" "(" <p:Parts> ")" => {
+        let mut w = Workout::new(n);
+        w.nodes = p;
+        w
+    }
+};
+
+pub Step : Run = {
+    TimeRun,
+    DistanceRun,
+};
+
+TimeRun : Run = {
+    <t:Num> "min" <e:Effort> => Run::from_time(600.0, 4.5),
+};
+
+DistanceRun : Run = {
+    <d:Num><e:Effort> => Run::from_distance(d as f32, 2.7),
+};
+
+Num: i32 = {
+    r"[0-9]+" => <>.parse::<i32>().unwrap(),
+};
+
+Effort : String = {
+    r"[ELMTHIR]" => <>.to_string(),
+    "jog"        => <>.to_string(),
+    "jg"         => <>.to_string(),
+    "rest"       => <>.to_string(),
+    "rst"        => <>.to_string(),
+};

@@ -3,7 +3,7 @@ use std::mem;
 mod crc16;
 mod wtree;
 mod parse;
-mod JD_grammar;
+mod jd_grammar;
 
 // constants
 pub const FIT_FILE_HDR_SIZE: usize = 14;
