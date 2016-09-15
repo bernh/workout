@@ -1,4 +1,5 @@
-use wtree::{Run, Workout, DistanceAndTime};
+use wtree::{Run, Workout, DistanceAndTime, pace2speed};
+use config::get_pace;
 
 grammar;
 
@@ -38,11 +39,11 @@ pub Step : Run = {
 };
 
 TimeRun : Run = {
-    <t:Num> "min" <e:Effort> => Run::from_time(600.0, 4.5),
+    <t:Num> "min" <e:Effort> => Run::from_time(t as f32 * 60.0, pace2speed(get_pace(&e))),
 };
 
 DistanceRun : Run = {
-    <d:Num><e:Effort> => Run::from_distance(d as f32, 2.7),
+    <d:Num><e:Effort> => Run::from_distance(d as f32, pace2speed(get_pace(&e))),
 };
 
 Num: i32 = {

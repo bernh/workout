@@ -6,6 +6,8 @@ build = "build.rs"
 
 [build-dependencies]
 lalrpop = "*"
+serde_codegen = "*"
 
 [dependencies]
 lalrpop-util = "*"
+serde = "*"

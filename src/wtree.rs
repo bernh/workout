@@ -79,14 +79,14 @@ impl DistanceAndTime for Workout {
     }
 }
 
-fn pace2speed(pace: String) -> f32 {
+pub fn pace2speed(pace: String) -> f32 {
     // pace is min:sec per kilometer, speed is m/s
     let values: Vec<_> = pace.split(":").collect();
     let seconds = values[0].parse::<i32>().unwrap() * 60 + values[1].parse::<i32>().unwrap();
     1000.0 / seconds as f32
 }
 
-fn speed2pace(speed: f32) -> String {
+pub fn speed2pace(speed: f32) -> String {
     let seconds = (1000.0 / speed) as i32;
     let mins = seconds / 60;
     let remaining = seconds % 60 as i32;
@@ -95,31 +95,34 @@ fn speed2pace(speed: f32) -> String {
 
 
 #[cfg(test)]
+mod tests {
+    use super::*;
 
-macro_rules! assert_delta {
-    ($x:expr, $y:expr, $d:expr) => {
-        if !($x - $y < $d || $y - $x < $d) { panic!(); }
+    macro_rules! assert_delta {
+        ($x:expr, $y:expr, $d:expr) => {
+            if !($x - $y < $d || $y - $x < $d) { panic!(); }
+        }
     }
-}
 
-#[test]
-fn pace_speed_convert() {
-    assert_delta!(pace2speed("6:00".to_string()), 10.0 / 3.6, 0.1);
-    assert_eq!(speed2pace(2.778), "5:59");
-}
+    #[test]
+    fn pace_speed_convert() {
+        assert_delta!(pace2speed("6:00".to_string()), 10.0 / 3.6, 0.1);
+        assert_eq!(speed2pace(2.778), "5:59");
+    }
 
-#[test]
-fn totals() {
-    let mut t = Workout::new(2);
-    t.add(Run::from_distance(1000.0, pace2speed("5:00".to_string())));
-    t.add(Run::from_time(240.0, pace2speed("4:00".to_string())));
-    assert_delta!(t.time(), 1080.0, 0.1);
-    assert_delta!(t.distance(), 4000.0, 0.1);
-}
+    #[test]
+    fn totals() {
+        let mut t = Workout::new(2);
+        t.add(Run::from_distance(1000.0, pace2speed("5:00".to_string())));
+        t.add(Run::from_time(240.0, pace2speed("4:00".to_string())));
+        assert_delta!(t.time(), 1080.0, 0.1);
+        assert_delta!(t.distance(), 4000.0, 0.1);
+    }
 
-#[test]
-fn construct() {
-    // 1 E + 2 * (1 T + 1 min rest) + 3 * (3 min H + 2 min jg)
-    // + 4 * (200 R + 200 jg) + 1 E
-    assert_eq!(1, 1);
+    #[test]
+    fn construct() {
+        // 1 E + 2 * (1 T + 1 min rest) + 3 * (3 min H + 2 min jg)
+        // + 4 * (200 R + 200 jg) + 1 E
+        assert_eq!(1, 1);
+    }
 }

@@ -4,6 +4,7 @@ mod crc16;
 mod wtree;
 mod parse;
 mod jd_grammar;
+mod config;
 
 // constants
 pub const FIT_FILE_HDR_SIZE: usize = 14;
