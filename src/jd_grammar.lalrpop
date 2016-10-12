@@ -26,7 +26,7 @@ pub Part : Box<DistanceAndTime> = {
 };
 
 pub Workout : Workout = {
-    <n:Num> "*" "(" <p:Parts> ")" => {
+    <n:Repetition> "*" "(" <p:Parts> ")" => {
         let mut w = Workout::new(n);
         w.nodes = p;
         w
@@ -39,16 +39,32 @@ pub Step : Run = {
 };
 
 TimeRun : Run = {
-    <t:Num> "min" <e:Effort> => Run::from_time(t as f32 * 60.0, pace2speed(get_pace(&e))),
+    <t:Time> "min" <e:Effort> => Run::from_time(t as f32 * 60.0, pace2speed(get_pace(&e))),
 };
 
 DistanceRun : Run = {
-    <d:Num><e:Effort> => Run::from_distance(d as f32, pace2speed(get_pace(&e))),
+    <d:Distance><e:Effort> => {
+        if d < 100.0 {
+            Run::from_distance(d * 1000.0 , pace2speed(get_pace(&e)))
+        } else {
+            Run::from_distance(d, pace2speed(get_pace(&e)))
+        }
+
+    }
 };
 
-Num: i32 = {
-    r"[0-9]+" => <>.parse::<i32>().unwrap(),
+Time: i32 = {
+    r"[0-9]" => <>.parse::<i32>().unwrap(),
 };
+
+Distance: f32 = {
+    r"[0-9]+\.[0-9]+" => <>.parse::<f32>().unwrap(),
+};
+
+Repetition: i32 = {
+    r"[0-9]" => <>.parse::<i32>().unwrap(),
+};
+
 
 Effort : String = {
     r"[ELMTHIR]" => <>.to_string(),

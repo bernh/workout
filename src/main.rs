@@ -29,5 +29,8 @@ fn main() {
     // let array = header.bin();
     // println!("{:?}", array);
     // write_file(&array, Path::new("workout.fit"));
-
+    workout::simple_parse("4.8E + 6.4M + 1.6T + 1.6M + 3.2E".to_string())
 }
+
+
+

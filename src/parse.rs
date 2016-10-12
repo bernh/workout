@@ -1,4 +1,3 @@
-
 pub fn preprocess_input(input: String) -> String {
     input.split_whitespace().collect()
 }
@@ -29,6 +28,11 @@ mod tests {
         let r = jd_grammar::parse_Workout_main("3L");
         let w = r.unwrap();
         assert_eq!(w.nodes.len(), 1);
+    }
+
+
+    fn multi_step_workout() {
+        let r = jd_grammar::parse_Workout_main("4.8E+6.4M+1.6T+1.6M+3.2E");
     }
 
     #[test]
