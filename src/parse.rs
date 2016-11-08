@@ -1,4 +1,4 @@
-pub fn preprocess_input(input: String) -> String {
+pub fn preprocess_input(input: &String) -> String {
     input.split_whitespace().collect()
 }
 

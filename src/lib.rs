@@ -49,9 +49,11 @@ impl FitFileHeader {
 }
 
 pub fn simple_parse(input: String) {
-    let w = jd_grammar::parse_Workout_main(&parse::preprocess_input(input)).unwrap();
-    println!("Distance: {}", w.distance());
-    println!("Time: {}:{:02}", w.time() as i32 / 60, w.time() as i32 % 60 );
+    let w = jd_grammar::parse_Workout_main(&parse::preprocess_input(&input)).unwrap();
+    println!("{}", input);
+    println!("({:.*} km, {}:{:02} h)", 1, w.distance() as f32 / 1000.0,
+             w.time() as i32 / 3600, w.time() as i32 % 3600 / 60);
+    println!("");
 }
 
 

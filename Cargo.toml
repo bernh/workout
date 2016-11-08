@@ -10,4 +10,4 @@ serde_codegen = "*"
 
 [dependencies]
 lalrpop-util = "*"
-serde = "*"
+clap = "*"

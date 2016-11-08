@@ -54,15 +54,16 @@ DistanceRun : Run = {
 };
 
 Time: i32 = {
-    r"[0-9]" => <>.parse::<i32>().unwrap(),
+    r"[0-9]+" => <>.parse::<i32>().unwrap(),
 };
 
 Distance: f32 = {
+    r"[0-9]+"         => <>.parse::<f32>().unwrap(),
     r"[0-9]+\.[0-9]+" => <>.parse::<f32>().unwrap(),
 };
 
 Repetition: i32 = {
-    r"[0-9]" => <>.parse::<i32>().unwrap(),
+    r"[0-9]+" => <>.parse::<i32>().unwrap(),
 };
 
 
