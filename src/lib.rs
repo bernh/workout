@@ -6,8 +6,10 @@ mod parse;
 mod jd_grammar;
 mod config;
 
-
 use wtree::{DistanceAndTime};
+
+#[macro_use]
+extern crate log;
 
 // constants
 pub const FIT_FILE_HDR_SIZE: usize = 14;
@@ -50,10 +52,9 @@ impl FitFileHeader {
 
 pub fn simple_parse(input: String) {
     let w = jd_grammar::parse_Workout_main(&parse::preprocess_input(&input)).unwrap();
-    println!("{}", input);
-    println!("({:.*} km, {}:{:02} h)", 1, w.distance() as f32 / 1000.0,
-             w.time() as i32 / 3600, w.time() as i32 % 3600 / 60);
-    println!("");
+    info!("{}", input);
+    info!("({:.*} km, {}:{:02} h)", 1, w.distance() as f32 / 1000.0,
+          w.time() as i32 / 3600, w.time() as i32 % 3600 / 60);
 }
 
 

@@ -26,6 +26,7 @@
 45 min E + 2 * (3.2T + 2 min rest) + 1.6T + 1.6E
 3.2E + 3.2T + 60 min E + 2 * (1.6T + 1 min rest) + 3.2E
 9.6E + 5 * (3 min I + 2 min jog) + 4 * (1min R + 2 min jog) + 3.2E
+150 min E
 9.6E + 5 * (3 min I + 3 min jog) + 1.6T + 6.4 E
 9.6 E + 4 * (1.6T + 1 min rest) + 3.2E
 1.6E + 2 * (3.2T + 2 min rest) + 60 min E

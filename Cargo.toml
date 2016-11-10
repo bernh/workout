@@ -11,3 +11,6 @@ serde_codegen = "*"
 [dependencies]
 lalrpop-util = "*"
 clap = "*"
+log = "*"
+env_logger = "*"
+
