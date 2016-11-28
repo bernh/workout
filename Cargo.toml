@@ -13,4 +13,5 @@ lalrpop-util = "*"
 clap = "*"
 log = "*"
 env_logger = "*"
+byteorder = "*"
 
