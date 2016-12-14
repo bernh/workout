@@ -51,7 +51,7 @@ fn main() {
                                .short("w")
                                .long("workouts")
                                .value_name("FILE")
-                               .required(true)
+                               .required(false)
                                .help("Sets workout file")
                                .takes_value(true))
                           .arg(Arg::with_name("v")
@@ -59,7 +59,6 @@ fn main() {
                                .multiple(true)
                                .help("Sets the level of verbosity"))
                           .get_matches();
-    let workouts_file = matches.value_of("workouts").unwrap();
 
     // set RUST_LOG environment variable for logging config
     match matches.occurrences_of("v") {
@@ -69,16 +68,18 @@ fn main() {
     }
     env_logger::init().unwrap();
 
-    for w in read_workout_file(Path::new(workouts_file)) {
-        workout::simple_parse(w);
+    if let Some(workouts_file) = matches.value_of("workouts") {
+        for w in read_workout_file(Path::new(workouts_file)) {
+            workout::simple_parse(w);
+        }
     }
 
-
-    // let mut header = workout::FitFileHeader::new();
-    // header.calc_crc();
-    // let array = header.bin();
-    // println!("{:?}", array);
-    // write_file(&array, Path::new("workout.fit"));
+    let header = workout::FitFileHeader::new()
+                    .size(0)
+                    .calc_crc()
+                    .bin();
+    println!("{:?}", header);
+    write_file(&header, Path::new("workout.fit"));
 }
 
 

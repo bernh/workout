@@ -1,5 +1,3 @@
-use std::mem;
-
 mod crc16;
 mod wtree;
 mod parse;
@@ -53,9 +51,15 @@ impl FitFileHeader {
         wtr
     }
 
-    pub fn calc_crc(&mut self) {
+    pub fn size(&mut self, size : u32) -> &mut FitFileHeader {
+        self.data_size = size;
+        self
+    }
+
+    pub fn calc_crc(&mut self) -> &mut FitFileHeader {
         let bytes = self.bin();
         self.crc = crc16::fit_crc_update16(0, &bytes[..bytes.len() - 2]);
+        self
     }
 }
 
@@ -85,7 +89,6 @@ pub fn simple_parse(input: String) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::mem;
 
     #[test]
     fn fit_file_header_size() {
