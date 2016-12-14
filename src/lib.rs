@@ -33,7 +33,7 @@ impl FitFileHeader {
         FitFileHeader {
             header_size: FIT_FILE_HDR_SIZE as u8,
             protocol_version: fit_protocol_version_10,
-            profile_version: 2,
+            profile_version: 2014,
             data_size: 0,
             data_type: [46, 70, 73, 84], // ".FIT"
             crc: 0,
@@ -98,8 +98,12 @@ mod tests {
 
     #[test]
     fn file_header() {
-        let mut fh = FitFileHeader::new();
-        fh.data_size = 360;
-        println!("{:?}", fh.bin());
+        let header = FitFileHeader::new()
+                            .size(360)
+                            .calc_crc()
+                            .bin();
+        assert_eq!(vec![0x0e, 0x10, 0xde, 0x07, 0x68, 0x01, 0x0, 0x0, 
+                        0x2e, 0x46, 0x49, 0x54, 0x37, 0xa7],
+                   header);
     }
 }
