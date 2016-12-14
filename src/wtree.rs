@@ -64,10 +64,9 @@ impl Workout {
         self.nodes.push(Box::new(node));
     }
 
-    pub fn pace(&self) -> String {
-        // TODO average pace
-        "3:00".to_string()
-    }
+    // pub fn pace<T: DistanceAndTime>(&self) -> String {
+    //     speed2pace(self.distance() / self.speed())
+    // }
 }
 
 impl DistanceAndTime for Workout {
@@ -117,12 +116,7 @@ mod tests {
         t.add(Run::from_time(240.0, pace2speed("4:00".to_string())));
         assert_delta!(t.time(), 1080.0, 0.1);
         assert_delta!(t.distance(), 4000.0, 0.1);
+        // TODO assert_eq!(t.pace(), "4:30".to_string());
     }
 
-    #[test]
-    fn construct() {
-        // 1 E + 2 * (1 T + 1 min rest) + 3 * (3 min H + 2 min jg)
-        // + 4 * (200 R + 200 jg) + 1 E
-        assert_eq!(1, 1);
-    }
 }
