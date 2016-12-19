@@ -63,21 +63,44 @@ impl FitFileHeader {
     }
 }
 
-pub trait DataRecord {
-    fn header_byte(&self) -> Vec<u8>;
+
+#[derive(Clone, Debug)]
+pub struct FITField {
+    id: u8,
+    data_size: u8,
+    data_type: u8,
+    data: Vec<u8>,
 }
 
-pub trait FITMessage {
-    fn definition_message(&self) -> Vec<u8>;
-    fn data_message(&self) -> Vec<u8>;
-    fn bin(&self) -> Vec<u8>;
-    // TODO create default implementation for bin
+#[derive(Clone, Debug)]
+pub struct FITMessage {
+    pub global_message_number: u16,
+    pub data_messages: Vec<FITField>,
 }
 
 
-
-
-
+impl FITMessage {
+    pub fn FileIDMessage() -> FITMessage {
+        FITMessage {
+            global_message_number: 0x00,
+            data_messages: 
+                vec![ FITField {id: 3, data_size: 04, data_type: 0x8c, 
+                                data: vec![0,0,0,1]},
+                ]
+        }
+    }
+    fn definition_message(&self) -> Vec<u8> {
+        let mut wtr = vec![];
+        wtr
+    }
+    fn data_message(&self) -> Vec<u8> {
+        let mut wtr = vec![];
+        wtr
+    }
+    pub fn bin(&self) -> Vec<u8> {
+        vec![]
+    }
+}
 
 pub fn simple_parse(input: String) {
     let w = jd_grammar::parse_Workout_main(&parse::preprocess_input(&input)).unwrap();
@@ -102,8 +125,14 @@ mod tests {
                             .size(360)
                             .calc_crc()
                             .bin();
-        assert_eq!(vec![0x0e, 0x10, 0xde, 0x07, 0x68, 0x01, 0x0, 0x0, 
+        assert_eq!(vec![0x0e, 0x10, 0xde, 0x07, 0x68, 0x01, 0x0, 0x0,
                         0x2e, 0x46, 0x49, 0x54, 0x37, 0xa7],
                    header);
+    }
+
+    #[test]
+    fn file_id_Message() {
+        let file_id = FITMessage::FileIDMessage();
+        assert_eq!(file_id.global_message_number, 0);
     }
 }
