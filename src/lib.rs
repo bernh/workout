@@ -4,7 +4,7 @@ mod parse;
 mod jd_grammar;
 mod config;
 
-use wtree::{DistanceAndTime};
+use wtree::DistanceAndTime;
 
 #[macro_use]
 extern crate log;
@@ -51,7 +51,7 @@ impl FitFileHeader {
         wtr
     }
 
-    pub fn size(&mut self, size : u32) -> &mut FitFileHeader {
+    pub fn size(&mut self, size: u32) -> &mut FitFileHeader {
         self.data_size = size;
         self
     }
@@ -83,10 +83,14 @@ impl FITMessage {
     pub fn FileIDMessage() -> FITMessage {
         FITMessage {
             global_message_number: 0x00,
-            data_messages: 
-                vec![ FITField {id: 3, data_size: 04, data_type: 0x8c, 
-                                data: vec![0,0,0,1]},
-                ]
+            data_messages: vec![
+                FITField {
+                    id: 3,
+                    data_size: 04,
+                    data_type: 0x8c,
+                    data: vec![0, 0, 0, 1],
+                },
+            ],
         }
     }
     fn definition_message(&self) -> Vec<u8> {
@@ -105,8 +109,13 @@ impl FITMessage {
 pub fn simple_parse(input: String) {
     let w = jd_grammar::parse_Workout_main(&parse::preprocess_input(&input)).unwrap();
     info!("{}", input);
-    info!("({:.*} km, {}:{:02} h)", 1, w.distance() as f32 / 1000.0,
-          w.time() as i32 / 3600, w.time() as i32 % 3600 / 60);
+    info!(
+        "({:.*} km, {}:{:02} h)",
+        1,
+        w.distance() as f32 / 1000.0,
+        w.time() as i32 / 3600,
+        w.time() as i32 % 3600 / 60
+    );
 }
 
 #[cfg(test)]
@@ -121,13 +130,26 @@ mod tests {
 
     #[test]
     fn file_header() {
-        let header = FitFileHeader::new()
-                            .size(360)
-                            .calc_crc()
-                            .bin();
-        assert_eq!(vec![0x0e, 0x10, 0xde, 0x07, 0x68, 0x01, 0x0, 0x0,
-                        0x2e, 0x46, 0x49, 0x54, 0x37, 0xa7],
-                   header);
+        let header = FitFileHeader::new().size(360).calc_crc().bin();
+        assert_eq!(
+            vec![
+                0x0e,
+                0x10,
+                0xde,
+                0x07,
+                0x68,
+                0x01,
+                0x0,
+                0x0,
+                0x2e,
+                0x46,
+                0x49,
+                0x54,
+                0x37,
+                0xa7,
+            ],
+            header
+        );
     }
 
     #[test]

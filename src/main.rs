@@ -17,16 +17,20 @@ extern crate env_logger;
 fn write_file(data: &[u8], path: &Path) {
     let mut file = match File::create(&path) {
         Err(why) => {
-            panic!("couldn't create {}: {}",
-                   path.display(),
-                   Error::description(&why))
+            panic!(
+                "couldn't create {}: {}",
+                path.display(),
+                Error::description(&why)
+            )
         }
         Ok(file) => file,
     };
     if let Err(why) = file.write_all(data) {
-        panic!("couldn't write to {}: {}",
-               path.display(),
-               Error::description(&why));
+        panic!(
+            "couldn't write to {}: {}",
+            path.display(),
+            Error::description(&why)
+        );
     };
 }
 
@@ -44,26 +48,30 @@ fn read_workout_file(path: &Path) -> Vec<String> {
 fn main() {
 
     let matches = App::new("JD Workouts")
-                          .version("1.0")
-                          .author("Bernhard Leiner <bleiner@gmail.com>")
-                          .about("Does awesome things")
-                          .arg(Arg::with_name("workouts")
-                               .short("w")
-                               .long("workouts")
-                               .value_name("FILE")
-                               .required(false)
-                               .help("Sets workout file")
-                               .takes_value(true))
-                          .arg(Arg::with_name("v")
-                               .short("v")
-                               .multiple(true)
-                               .help("Sets the level of verbosity"))
-                          .get_matches();
+        .version("1.0")
+        .author("Bernhard Leiner <bleiner@gmail.com>")
+        .about("Does awesome things")
+        .arg(
+            Arg::with_name("workouts")
+                .short("w")
+                .long("workouts")
+                .value_name("FILE")
+                .required(false)
+                .help("Sets workout file")
+                .takes_value(true),
+        )
+        .arg(
+            Arg::with_name("v")
+                .short("v")
+                .multiple(true)
+                .help("Sets the level of verbosity"),
+        )
+        .get_matches();
 
     // set RUST_LOG environment variable for logging config
     match matches.occurrences_of("v") {
-        0     => { /* do nothing */ },
-        1     => env::set_var("RUST_LOG", "info"),
+        0 => { /* do nothing */ }
+        1 => env::set_var("RUST_LOG", "info"),
         2 | _ => env::set_var("RUST_LOG", "debug"),
     }
     env_logger::init().unwrap();
@@ -74,13 +82,7 @@ fn main() {
         }
     }
 
-    let header = workout::FitFileHeader::new()
-                    .size(0)
-                    .calc_crc()
-                    .bin();
+    let header = workout::FitFileHeader::new().size(0).calc_crc().bin();
     println!("{:?}", header);
     write_file(&header, Path::new("workout.fit"));
 }
-
-
-
