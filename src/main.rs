@@ -6,13 +6,11 @@ use std::io::BufReader;
 use std::io::BufRead;
 use std::env;
 
-extern crate workout;
-extern crate clap;
+// external crates
 use clap::{Arg, App};
+use log;
+use env_logger;
 
-#[macro_use]
-extern crate log;
-extern crate env_logger;
 
 fn write_file(data: &[u8], path: &Path) {
     let mut file = match File::create(&path) {
@@ -74,15 +72,11 @@ fn main() {
         1 => env::set_var("RUST_LOG", "info"),
         2 | _ => env::set_var("RUST_LOG", "debug"),
     }
-    env_logger::init().unwrap();
+    env_logger::init();
 
     if let Some(workouts_file) = matches.value_of("workouts") {
         for w in read_workout_file(Path::new(workouts_file)) {
             workout::simple_parse(w);
         }
     }
-
-    let header = workout::FitFileHeader::new().size(0).calc_crc().bin();
-    println!("{:?}", header);
-    write_file(&header, Path::new("workout.fit"));
 }

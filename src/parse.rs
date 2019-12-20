@@ -1,12 +1,17 @@
-pub fn preprocess_input(input: &String) -> String {
-    input.split_whitespace().collect()
+use crate::wtree;
+
+pub fn parse_Step(step: &str) -> Option<wtree::Run> {
+    todo!();
+}
+
+pub fn parse_Workout(workout: &str) -> Option<wtree::Workout> {
+    todo!();
 }
 
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use jd_grammar;
     use wtree::DistanceAndTime;
 
     macro_rules! assert_delta {
@@ -16,16 +21,8 @@ mod tests {
     }
 
     #[test]
-    fn preprocess() {
-        assert_eq!(
-            preprocess_input(&"3 H + 4*(300 H + 200jg)".to_string()),
-            "3H+4*(300H+200jg)"
-        );
-    }
-
-    #[test]
     fn single_step() {
-        let r = jd_grammar::parse_Step("3E");
+        let r = parse_Step("3E");
         let w = r.unwrap();
         assert_eq!(w.distance(), 3000.0);
         assert_delta!(w.time(), (3 * 6 * 60) as f32, 0.1);
@@ -33,7 +30,7 @@ mod tests {
 
     #[test]
     fn single_step_workout() {
-        let r = jd_grammar::parse_Workout_main("3jog");
+        let r = parse_Workout("3jog");
         let w = r.unwrap();
         assert_eq!(w.nodes.len(), 1);
         assert_delta!(w.distance(), 3000 as f32, 0.1);
@@ -42,7 +39,7 @@ mod tests {
 
     #[test]
     fn multi_step_workout() {
-        let r = jd_grammar::parse_Workout_main("3M+3T");
+        let r = parse_Workout("3M+3T");
         let w = r.unwrap();
         assert_eq!(w.nodes.len(), 2);
         assert_delta!(w.distance(), 6000 as f32, 0.1);
@@ -51,7 +48,7 @@ mod tests {
 
     #[test]
     fn repeats() {
-        let r = jd_grammar::parse_Workout_main("2min I + 3*(1min H + 5min jg)");
+        let r = parse_Workout("2min I + 3*(1min H + 5min jg)");
         let w = r.unwrap();
         assert_eq!(w.nodes.len(), 2);
         assert_delta!(w.time(), ((2 + 3 * (1 + 5)) * 60) as f32, 0.1);

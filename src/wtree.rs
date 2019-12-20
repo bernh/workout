@@ -11,7 +11,7 @@ pub trait DistanceAndTime {
 
 #[derive(Debug, Clone)]
 pub struct Run {
-    pub rtype: RunType, // not really needed but nice nevertheless for better FIT files
+    pub rtype: RunType, // based on distance or time
     pub speed: f32, // m/s
     pub time: f32, // s
     pub distance: f32, // m
@@ -19,7 +19,7 @@ pub struct Run {
 
 pub struct Workout {
     pub reps: i32,
-    pub nodes: Vec<Box<DistanceAndTime>>,
+    pub nodes: Vec<Box<dyn DistanceAndTime>>,
 }
 
 impl Run {
