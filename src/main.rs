@@ -1,3 +1,6 @@
+#![allow(dead_code)]
+#![allow(unused_imports)]
+
 use std::path::Path;
 use std::fs::File;
 use std::error::Error;
@@ -76,7 +79,7 @@ fn main() {
 
     if let Some(workouts_file) = matches.value_of("workouts") {
         for w in read_workout_file(Path::new(workouts_file)) {
-            workout::simple_parse(w);
+            workout::log_parse(w);
         }
     }
 }
