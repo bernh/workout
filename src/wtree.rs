@@ -12,9 +12,9 @@ pub trait DistanceAndTime {
 #[derive(Debug, Clone)]
 pub struct Run {
     pub rtype: RunType, // based on distance or time
-    pub speed: f32, // m/s
-    pub time: f32, // s
-    pub distance: f32, // m
+    pub speed: f32,     // m/s
+    pub time: f32,      // s
+    pub distance: f32,  // m
 }
 
 pub struct Workout {
@@ -92,15 +92,16 @@ pub fn speed2pace(speed: f32) -> String {
     format!("{}:{:02}", mins, remaining)
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     macro_rules! assert_delta {
         ($x:expr, $y:expr, $d:expr) => {
-            if !($x - $y < $d || $y - $x < $d) { panic!(); }
-        }
+            if !($x - $y < $d || $y - $x < $d) {
+                panic!();
+            }
+        };
     }
 
     #[test]
@@ -118,5 +119,4 @@ mod tests {
         assert_delta!(t.distance(), 4000.0, 0.1);
         // TODO assert_eq!(t.pace(), "4:30".to_string());
     }
-
 }

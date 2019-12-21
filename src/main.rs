@@ -1,29 +1,26 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
 
-use std::path::Path;
-use std::fs::File;
-use std::error::Error;
-use std::io::Write;
-use std::io::BufReader;
-use std::io::BufRead;
 use std::env;
+use std::error::Error;
+use std::fs::File;
+use std::io::BufRead;
+use std::io::BufReader;
+use std::io::Write;
+use std::path::Path;
 
 // external crates
-use clap::{Arg, App};
-use log;
+use clap::{App, Arg};
 use env_logger;
-
+use log;
 
 fn write_file(data: &[u8], path: &Path) {
     let mut file = match File::create(&path) {
-        Err(why) => {
-            panic!(
-                "couldn't create {}: {}",
-                path.display(),
-                Error::description(&why)
-            )
-        }
+        Err(why) => panic!(
+            "couldn't create {}: {}",
+            path.display(),
+            Error::description(&why)
+        ),
         Ok(file) => file,
     };
     if let Err(why) = file.write_all(data) {
@@ -45,9 +42,7 @@ fn read_workout_file(path: &Path) -> Vec<String> {
     BufReader::new(file).lines().map(|x| x.unwrap()).collect()
 }
 
-
 fn main() {
-
     let matches = App::new("JD Workouts")
         .version("1.0")
         .author("Bernhard Leiner <bleiner@gmail.com>")

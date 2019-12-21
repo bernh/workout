@@ -3,7 +3,6 @@ use crate::wtree::DistanceAndTime;
 
 use log::*;
 
-
 pub fn log_parse(input: String) {
     let w = parse_workout(&input).unwrap();
     info!("{}", input);
@@ -16,18 +15,15 @@ pub fn log_parse(input: String) {
     );
 }
 
-
-
 pub fn parse_step(step: &str) -> Option<wtree::Run> {
-    debug!("parsing step: {}", step);
+    info!("parsing step: {}", step);
     todo!();
 }
 
 pub fn parse_workout(workout: &str) -> Option<wtree::Workout> {
-    debug!("parsing workout: {}", workout);
+    info!("parsing workout: {}", workout);
     todo!();
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -36,8 +32,10 @@ mod tests {
 
     macro_rules! assert_delta {
         ($x:expr, $y:expr, $d:expr) => {
-            if !($x - $y < $d || $y - $x < $d) { panic!(); }
-        }
+            if !($x - $y < $d || $y - $x < $d) {
+                panic!();
+            }
+        };
     }
 
     #[test]
