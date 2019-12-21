@@ -27,18 +27,18 @@ impl Run {
         let time = distance / speed;
         Run {
             rtype: RunType::Distance,
-            speed: speed,
-            time: time,
-            distance: distance,
+            speed,
+            time,
+            distance,
         }
     }
     pub fn from_time(time: f32, speed: f32) -> Run {
         let distance = time * speed;
         Run {
             rtype: RunType::Time,
-            speed: speed,
-            time: time,
-            distance: distance,
+            speed,
+            time,
+            distance,
         }
     }
 }
@@ -55,7 +55,7 @@ impl DistanceAndTime for Run {
 impl Workout {
     pub fn new(reps: i32) -> Workout {
         Workout {
-            reps: reps,
+            reps,
             nodes: Vec::new(),
         }
     }
@@ -80,7 +80,7 @@ impl DistanceAndTime for Workout {
 
 pub fn pace2speed(pace: String) -> f32 {
     // pace is min:sec per kilometer, speed is m/s
-    let values: Vec<_> = pace.split(":").collect();
+    let values: Vec<_> = pace.split("':'").collect();
     let seconds = values[0].parse::<i32>().unwrap() * 60 + values[1].parse::<i32>().unwrap();
     1000.0 / seconds as f32
 }
