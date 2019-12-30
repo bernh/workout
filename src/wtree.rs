@@ -81,7 +81,7 @@ impl DistanceAndTime for Workout {
     }
 }
 
-pub fn pace2speed(pace: String) -> f32 {
+pub fn pace2speed(pace: &str) -> f32 {
     // pace is min:sec per kilometer, speed is m/s
     debug!("pace2speed: {}", pace);
     let values: Vec<_> = pace.split(':').collect();
@@ -110,17 +110,17 @@ mod tests {
 
     #[test]
     fn pace_speed_convert() {
-        assert_approx_eq!(pace2speed("6:00".to_string()), 10.0 / 3.6, 0.1);
+        assert_approx_eq!(pace2speed("6:00"), 10.0 / 3.6, 0.1);
         assert_eq!(speed2pace(2.778), "5:59");
     }
 
     #[test]
     fn totals() {
         let mut t = Workout::new(2);
-        t.add(Step::from_distance(1000.0, pace2speed("5:00".to_string())));
-        t.add(Step::from_time(240.0, pace2speed("4:00".to_string())));
+        t.add(Step::from_distance(1000.0, pace2speed("5:00")));
+        t.add(Step::from_time(240.0, pace2speed("4:00")));
         assert_approx_eq!(t.time(), 1080.0, 0.1);
         assert_approx_eq!(t.distance(), 4000.0, 0.1);
-        // TODO assert_eq!(t.pace(), "4:30".to_string());
+        // TODO assert_eq!(t.pace(), "4:30");
     }
 }

@@ -44,16 +44,16 @@ fn parse_distance_run(input: &str) -> IResult<&str, wtree::Step> {
     // <distance> <effort>
     let (input, (distance, effort)) = tuple((parse_distance, parse_effort))(input)?;
     if distance < 100.0 {
-        Ok((input, wtree::Step::from_distance(distance * 1000.0, pace2speed(get_pace(&effort)))))
+        Ok((input, wtree::Step::from_distance(distance * 1000.0, pace2speed(get_pace(effort)))))
     } else {
-        Ok((input, wtree::Step::from_distance(distance, pace2speed(get_pace(&effort)))))
+        Ok((input, wtree::Step::from_distance(distance, pace2speed(get_pace(effort)))))
     }
 }
 
 fn parse_time_run(input: &str) -> IResult<&str, wtree::Step> {
     // <time [min]> <effort>
     let (input, (time, effort)) = tuple((parse_time, parse_effort))(input)?;
-    Ok((input, wtree::Step::from_time(time * 60.0, pace2speed(get_pace(&effort)))))
+    Ok((input, wtree::Step::from_time(time * 60.0, pace2speed(get_pace(effort)))))
 }
 
 fn parse_distance(input: &str) -> IResult<&str, f32> {
@@ -68,8 +68,8 @@ fn parse_time(input: &str) -> IResult<&str, f32> {
     Ok((input, time.parse::<f32>().unwrap()))
 }
 
-fn parse_effort(input: &str) -> IResult<&str, String> {
-    Ok((input, "E".to_string()))
+fn parse_effort(input: &str) -> IResult<&str, &str> {
+    Ok((input, "E"))
 }
 
 

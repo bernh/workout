@@ -1,6 +1,6 @@
 #[cfg(not(test))]
-pub fn get_pace(effort: &str) -> String {
-    match effort {
+pub fn get_pace(effort: &str) -> &str {
+    &match effort {
         "E" => "5:30",
         "M" => "4:55", // VDOT: 45.3
         "T" => "4:33", // VDOT: 46
@@ -13,11 +13,10 @@ pub fn get_pace(effort: &str) -> String {
         "rest" => "15:00",
         _ => "15:00", // TODO panic
     }
-    .to_string()
 }
 
 #[cfg(test)]
-pub fn get_pace(effort: &str) -> String {
+pub fn get_pace(effort: &str) -> &str {
     match effort {
         "E" => "6:00",
         "M" => "5:00",
@@ -30,5 +29,4 @@ pub fn get_pace(effort: &str) -> String {
         "rest" => "15:00",
         _ => "15:00", // TODO panic
     }
-    .to_string()
 }
