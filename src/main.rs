@@ -38,7 +38,6 @@ fn read_workout_file(path: &Path) -> Vec<String> {
         Err(why) => panic!("couldn't open {}: {}", path.display(), why.description()),
         Ok(file) => file,
     };
-
     BufReader::new(file).lines().map(|x| x.unwrap()).collect()
 }
 
@@ -46,11 +45,18 @@ fn main() {
     let matches = App::new("JD Workouts")
         .version("1.0")
         .author("Bernhard Leiner <bleiner@gmail.com>")
-        .about("Does awesome things")
+        .about("Running workout analyser")
         .arg(
-            Arg::with_name("workouts")
-                .short("w")
-                .long("workouts")
+            Arg::with_name("workout")
+                .value_name("WORKOUT")
+                .required(false)
+                .help("workout description")
+                .takes_value(true),
+        )
+        .arg(
+            Arg::with_name("file")
+                .short("f")
+                .long("file")
                 .value_name("FILE")
                 .required(false)
                 .help("Sets workout file")
@@ -72,9 +78,13 @@ fn main() {
     }
     env_logger::init();
 
-    if let Some(workouts_file) = matches.value_of("workouts") {
+    if let Some(w) = matches.value_of("workout") {
+        workout::log_parse(w);
+    }
+
+    if let Some(workouts_file) = matches.value_of("file") {
         for w in read_workout_file(Path::new(workouts_file)) {
-            workout::log_parse(w);
+            workout::log_parse(&w);
         }
     }
 }

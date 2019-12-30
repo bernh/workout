@@ -1,3 +1,6 @@
+use log::*;
+
+
 #[derive(Debug, Clone)]
 pub enum RunType {
     Distance,
@@ -10,7 +13,7 @@ pub trait DistanceAndTime {
 }
 
 #[derive(Debug, Clone)]
-pub struct Run {
+pub struct Step {
     pub rtype: RunType, // based on distance or time
     pub speed: f32,     // m/s
     pub time: f32,      // s
@@ -22,19 +25,19 @@ pub struct Workout {
     pub nodes: Vec<Box<dyn DistanceAndTime>>,
 }
 
-impl Run {
-    pub fn from_distance(distance: f32, speed: f32) -> Run {
+impl Step {
+    pub fn from_distance(distance: f32, speed: f32) -> Step {
         let time = distance / speed;
-        Run {
+        Step {
             rtype: RunType::Distance,
             speed,
             time,
             distance,
         }
     }
-    pub fn from_time(time: f32, speed: f32) -> Run {
+    pub fn from_time(time: f32, speed: f32) -> Step {
         let distance = time * speed;
-        Run {
+        Step {
             rtype: RunType::Time,
             speed,
             time,
@@ -43,7 +46,7 @@ impl Run {
     }
 }
 
-impl DistanceAndTime for Run {
+impl DistanceAndTime for Step {
     fn time(&self) -> f32 {
         self.time
     }
@@ -80,7 +83,8 @@ impl DistanceAndTime for Workout {
 
 pub fn pace2speed(pace: String) -> f32 {
     // pace is min:sec per kilometer, speed is m/s
-    let values: Vec<_> = pace.split("':'").collect();
+    debug!("pace2speed: {}", pace);
+    let values: Vec<_> = pace.split(':').collect();
     let seconds = values[0].parse::<i32>().unwrap() * 60 + values[1].parse::<i32>().unwrap();
     1000.0 / seconds as f32
 }
@@ -96,7 +100,7 @@ pub fn speed2pace(speed: f32) -> String {
 mod tests {
     use super::*;
 
-    macro_rules! assert_delta {
+    macro_rules! assert_approx_eq {
         ($x:expr, $y:expr, $d:expr) => {
             if !($x - $y < $d || $y - $x < $d) {
                 panic!();
@@ -106,17 +110,17 @@ mod tests {
 
     #[test]
     fn pace_speed_convert() {
-        assert_delta!(pace2speed("6:00".to_string()), 10.0 / 3.6, 0.1);
+        assert_approx_eq!(pace2speed("6:00".to_string()), 10.0 / 3.6, 0.1);
         assert_eq!(speed2pace(2.778), "5:59");
     }
 
     #[test]
     fn totals() {
         let mut t = Workout::new(2);
-        t.add(Run::from_distance(1000.0, pace2speed("5:00".to_string())));
-        t.add(Run::from_time(240.0, pace2speed("4:00".to_string())));
-        assert_delta!(t.time(), 1080.0, 0.1);
-        assert_delta!(t.distance(), 4000.0, 0.1);
+        t.add(Step::from_distance(1000.0, pace2speed("5:00".to_string())));
+        t.add(Step::from_time(240.0, pace2speed("4:00".to_string())));
+        assert_approx_eq!(t.time(), 1080.0, 0.1);
+        assert_approx_eq!(t.distance(), 4000.0, 0.1);
         // TODO assert_eq!(t.pace(), "4:30".to_string());
     }
 }
