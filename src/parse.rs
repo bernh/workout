@@ -13,7 +13,7 @@ use nom::{
 };
 
 pub fn log_parse(input: &str) {
-    let (_, w) = parse_workout_main(&input).unwrap();
+    let (_, w) = parse_workout(&normalize_input(input)).unwrap();
     info!(
         "({:.*} km, {}:{:02} h)",
         1,
@@ -23,17 +23,27 @@ pub fn log_parse(input: &str) {
     );
 }
 
-pub fn parse_workout_main(input: &str) -> IResult<&str, wtree::Workout> {
-    // <Part> [ "+" <Part>]
+fn normalize_input(input: &str) -> String {
+    let norm : String = input.split_whitespace().collect();
+    format!("1*({})", norm)
+}
+
+// --- nom parser combinator functions ---
+pub fn parse_workout(input: &str) -> IResult<&str, wtree::Workout> {
+    // <rep> "*" "("<parts>")"
     info!("parsing workout: {}", input);
-    let (input, parts) = parse_parts(input)?;
-    let mut w = Workout::new(1);
-    for p in parts {
-        w.nodes.push(p);
-    }
+
+    let (input, (rep, _, _, parts, _)) = tuple((
+        take_while(|c: char| c.is_digit(10)),
+        tag("*"),
+        tag("("),
+        parse_parts,
+        tag(")"),
+    ))(input)?;
+    let mut w = Workout::new(rep.parse::<i32>().unwrap());
+    w.nodes = parts;
     Ok((input, w))
 }
-// --- nom parser combinator functions ---
 
 pub fn parse_parts(input: &str) -> IResult<&str, Vec<Box<dyn wtree::DistanceAndTime>>> {
     separated_list(tag("+"), parse_part)(input)
@@ -53,22 +63,6 @@ pub fn parse_part(input: &str) -> IResult<&str, Box<dyn wtree::DistanceAndTime>>
         Ok((rem_input, step)) => Ok((rem_input, Box::new(step))),
         Err(e) => Err(e),
     }
-}
-
-pub fn parse_workout(input: &str) -> IResult<&str, wtree::Workout> {
-    // <rep> "*" "("<parts>")"
-    info!("parsing workout: {}", input);
-
-    let (input, (rep, _, _, parts, _)) = tuple((
-        take_while(|c: char| c.is_digit(10)),
-        tag("*"),
-        tag("("),
-        parse_parts,
-        tag(")"),
-    ))(input)?;
-    let mut w = Workout::new(rep.parse::<i32>().unwrap());
-    w.nodes = parts;
-    Ok((input, w))
 }
 
 pub fn parse_step(input: &str) -> IResult<&str, wtree::Step> {
@@ -164,21 +158,21 @@ mod tests {
 
     #[test]
     fn single_step_2() {
-        let (_, s) = parse_step("360sE").unwrap();
+        let (_, s) = parse_step("360s E").unwrap();
         assert_abs_diff_eq!(s.distance(), 1000_f32, epsilon = 0.1);
         assert_abs_diff_eq!(s.time(), 360_f32);
     }
 
     #[test]
     fn single_step_workout() {
-        let (_, w) = parse_workout_main("3jog").unwrap();
+        let (_, w) = parse_workout(&normalize_input("3jog")).unwrap();
         assert_eq!(w.nodes.len(), 1);
         assert_abs_diff_eq!(w.distance(), 3000_f32, epsilon = 0.1);
         assert_abs_diff_eq!(w.time(), (3 * 8 * 60) as f32, epsilon = 0.1);
     }
     #[test]
     fn multi_step_workout() {
-        let (_, w) = parse_workout_main("3M+3T").unwrap();
+        let (_, w) = parse_workout(&normalize_input("3 M + 3 T")).unwrap();
         assert_eq!(w.nodes.len(), 2);
         assert_abs_diff_eq!(w.distance(), 6000_f32, epsilon = 0.1);
         assert_abs_diff_eq!(
@@ -188,12 +182,10 @@ mod tests {
         );
     }
 
-    /*
     #[test]
     fn repeats() {
-        let r = parse_workout("2min I + 3*(1min H + 5min jg)");
-        let w = r.unwrap();
+        let (_, w) = parse_workout(&normalize_input("2min I + 3*(1min H + 5min jg)")).unwrap();
         assert_eq!(w.nodes.len(), 2);
-        assert_approx_eq!(w.time(), ((2 + 3 * (1 + 5)) * 60) as f32, 0.1);
-    } */
+        assert_abs_diff_eq!(w.time(), ((2 + 3 * (1 + 5)) * 60) as f32, epsilon = 0.1);
+    }
 }
