@@ -1,6 +1,3 @@
-use log::*;
-
-
 #[derive(Debug, Clone)]
 pub enum RunType {
     Distance,
@@ -22,7 +19,7 @@ pub struct Step {
 
 pub struct Workout {
     pub reps: i32,
-    pub nodes: Vec<Box<dyn DistanceAndTime>>,
+    pub nodes: Vec<Box<dyn DistanceAndTime>>,  // vector of trait objects
 }
 
 impl Step {
@@ -63,9 +60,9 @@ impl Workout {
         }
     }
 
-    pub fn add<T: DistanceAndTime + 'static>(&mut self, node: T) {
-        self.nodes.push(Box::new(node));
-    }
+    //pub fn add<T: DistanceAndTime + 'static>(&mut self, node: T) {
+        //self.nodes.push(Box::new(node));
+    //}
 
     // pub fn pace<T: DistanceAndTime>(&self) -> String {
     //     speed2pace(self.distance() / self.speed())
@@ -83,7 +80,6 @@ impl DistanceAndTime for Workout {
 
 pub fn pace2speed(pace: &str) -> f32 {
     // pace is min:sec per kilometer, speed is m/s
-    debug!("pace2speed: {}", pace);
     let values: Vec<_> = pace.split(':').collect();
     let seconds = values[0].parse::<i32>().unwrap() * 60 + values[1].parse::<i32>().unwrap();
     1000.0 / seconds as f32
@@ -117,8 +113,8 @@ mod tests {
     #[test]
     fn totals() {
         let mut t = Workout::new(2);
-        t.add(Step::from_distance(1000.0, pace2speed("5:00")));
-        t.add(Step::from_time(240.0, pace2speed("4:00")));
+        t.nodes.push(Box::new(Step::from_distance(1000.0, pace2speed("5:00"))));
+        t.nodes.push(Box::new(Step::from_time(240.0, pace2speed("4:00"))));
         assert_approx_eq!(t.time(), 1080.0, 0.1);
         assert_approx_eq!(t.distance(), 4000.0, 0.1);
         // TODO assert_eq!(t.pace(), "4:30");
