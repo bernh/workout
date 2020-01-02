@@ -31,18 +31,17 @@ fn normalize_input(input: &str) -> String {
 // --- nom parser combinator functions ---
 pub fn parse_workout(input: &str) -> IResult<&str, wtree::Workout> {
     // <rep> "*" "("<parts>")"
-    info!("parsing workout: {}", input);
-
-    let (input, (rep, _, _, parts, _)) = tuple((
+    let (rem_input, (rep, _, _, parts, _)) = tuple((
         take_while(|c: char| c.is_digit(10)),
         tag("*"),
         tag("("),
         parse_parts,
         tag(")"),
     ))(input)?;
+    info!("New Workout from: {}", input);
     let mut w = Workout::new(rep.parse::<i32>().unwrap());
     w.nodes = parts;
-    Ok((input, w))
+    Ok((rem_input, w))
 }
 
 pub fn parse_parts(input: &str) -> IResult<&str, Vec<Box<dyn wtree::DistanceAndTime>>> {
@@ -51,8 +50,6 @@ pub fn parse_parts(input: &str) -> IResult<&str, Vec<Box<dyn wtree::DistanceAndT
 
 pub fn parse_part(input: &str) -> IResult<&str, Box<dyn wtree::DistanceAndTime>> {
     // <workout> | <step>
-    info!("parsing parts: {}", input);
-
     let res_w = parse_workout(input);
     if let Ok((rem_input, workout)) = res_w {
         return Ok((rem_input, Box::new(workout)));
@@ -66,22 +63,22 @@ pub fn parse_part(input: &str) -> IResult<&str, Box<dyn wtree::DistanceAndTime>>
 }
 
 pub fn parse_step(input: &str) -> IResult<&str, wtree::Step> {
-    info!("parsing step: {}", input);
     // <time step> | <distance step>
     alt((parse_time_step, parse_distance_step))(input)
 }
 
 fn parse_distance_step(input: &str) -> IResult<&str, wtree::Step> {
     // <distance> <effort>
-    let (input, (distance, effort)) = tuple((parse_distance, parse_effort))(input)?;
+    let (rem_input, (distance, effort)) = tuple((parse_distance, parse_effort))(input)?;
+    info!("New distance step from: {}", input);
     if distance < 100.0 {
         Ok((
-            input,
+            rem_input,
             wtree::Step::from_distance(distance * 1000.0, pace2speed(get_pace(effort))),
         ))
     } else {
         Ok((
-            input,
+            rem_input,
             wtree::Step::from_distance(distance, pace2speed(get_pace(effort))),
         ))
     }
@@ -89,9 +86,10 @@ fn parse_distance_step(input: &str) -> IResult<&str, wtree::Step> {
 
 fn parse_time_step(input: &str) -> IResult<&str, wtree::Step> {
     // <time [min]> <effort>
-    let (input, (time, effort)) = tuple((parse_time, parse_effort))(input)?;
+    let (rem_input, (time, effort)) = tuple((parse_time, parse_effort))(input)?;
+    info!("New distance step from: {}", input);
     Ok((
-        input,
+        rem_input,
         wtree::Step::from_time(time, pace2speed(get_pace(effort))),
     ))
 }
