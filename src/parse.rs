@@ -14,7 +14,7 @@ use nom::{
 
 pub fn log_parse(input: &str) {
     let (_, w) = parse_workout(&normalize_input(input)).unwrap();
-    info!(
+    println!(
         "({:.*} km, {}:{:02} h)",
         1,
         w.distance() as f32 / 1000.0,
@@ -24,7 +24,7 @@ pub fn log_parse(input: &str) {
 }
 
 fn normalize_input(input: &str) -> String {
-    let norm : String = input.split_whitespace().collect();
+    let norm: String = input.split_whitespace().collect();
     format!("1*({})", norm)
 }
 
@@ -100,14 +100,12 @@ fn parse_distance(input: &str) -> IResult<&str, f32> {
 }
 
 fn parse_time(input: &str) -> IResult<&str, f32> {
-    let (rem_input, time) = alt((
-        terminated(take_while(is_float_digit), tag("min")),
-        terminated(take_while(is_float_digit), tag("s")),
-    ))(input)?;
+    let (input, (time, unit)) =
+        tuple((take_while(is_float_digit), alt((tag("min"), tag("s")))))(input)?;
     Ok((
-        rem_input,
+        input,
         time.parse::<f32>().unwrap() * {
-            if input.contains("min") {
+            if unit.contains("min") {
                 60.0
             } else {
                 1.0
@@ -156,7 +154,7 @@ mod tests {
 
     #[test]
     fn single_step_2() {
-        let (_, s) = parse_step("360s E").unwrap();
+        let (_, s) = parse_step("360sE").unwrap();
         assert_abs_diff_eq!(s.distance(), 1000_f32, epsilon = 0.1);
         assert_abs_diff_eq!(s.time(), 360_f32);
     }

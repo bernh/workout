@@ -95,18 +95,11 @@ pub fn speed2pace(speed: f32) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    macro_rules! assert_approx_eq {
-        ($x:expr, $y:expr, $d:expr) => {
-            if !($x - $y < $d || $y - $x < $d) {
-                panic!();
-            }
-        };
-    }
+    use approx::assert_abs_diff_eq;
 
     #[test]
     fn pace_speed_convert() {
-        assert_approx_eq!(pace2speed("6:00"), 10.0 / 3.6, 0.1);
+        assert_abs_diff_eq!(pace2speed("6:00"), 10.0 / 3.6, epsilon = 0.1);
         assert_eq!(speed2pace(2.778), "5:59");
     }
 
@@ -117,8 +110,8 @@ mod tests {
             .push(Box::new(Step::from_distance(1000.0, pace2speed("5:00"))));
         t.nodes
             .push(Box::new(Step::from_time(240.0, pace2speed("4:00"))));
-        assert_approx_eq!(t.time(), 1080.0, 0.1);
-        assert_approx_eq!(t.distance(), 4000.0, 0.1);
+        assert_abs_diff_eq!(t.time(), 1080.0);
+        assert_abs_diff_eq!(t.distance(), 4000.0);
         // TODO assert_eq!(t.pace(), "4:30");
     }
 }
