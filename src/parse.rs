@@ -12,15 +12,15 @@ use nom::{
     IResult,
 };
 
-pub fn log_parse(input: &str) {
+pub fn summarize(input: &str) -> String {
     let (_, w) = parse_workout(&normalize_input(input)).unwrap();
-    println!(
-        "({:.*} km, {}:{:02} h)",
+    format!(
+        "{:.*} km, {}:{:02} h",
         1,
         w.distance() as f32 / 1000.0,
         w.time() as i32 / 3600,
         w.time() as i32 % 3600 / 60
-    );
+    )
 }
 
 fn normalize_input(input: &str) -> String {
@@ -44,11 +44,11 @@ pub fn parse_workout(input: &str) -> IResult<&str, wtree::Workout> {
     Ok((rem_input, w))
 }
 
-pub fn parse_parts(input: &str) -> IResult<&str, Vec<Box<dyn wtree::DistanceAndTime>>> {
+fn parse_parts(input: &str) -> IResult<&str, Vec<Box<dyn wtree::DistanceAndTime>>> {
     separated_list(tag("+"), parse_part)(input)
 }
 
-pub fn parse_part(input: &str) -> IResult<&str, Box<dyn wtree::DistanceAndTime>> {
+fn parse_part(input: &str) -> IResult<&str, Box<dyn wtree::DistanceAndTime>> {
     // <workout> | <step>
     let res_w = parse_workout(input);
     if let Ok((rem_input, workout)) = res_w {
@@ -62,7 +62,7 @@ pub fn parse_part(input: &str) -> IResult<&str, Box<dyn wtree::DistanceAndTime>>
     }
 }
 
-pub fn parse_step(input: &str) -> IResult<&str, wtree::Step> {
+fn parse_step(input: &str) -> IResult<&str, wtree::Step> {
     // <time step> | <distance step>
     alt((parse_time_step, parse_distance_step))(input)
 }
@@ -87,7 +87,7 @@ fn parse_distance_step(input: &str) -> IResult<&str, wtree::Step> {
 fn parse_time_step(input: &str) -> IResult<&str, wtree::Step> {
     // <time [min]> <effort>
     let (rem_input, (time, effort)) = tuple((parse_time, parse_effort))(input)?;
-    info!("New distance step from: {}", input);
+    info!("New time step from: {}", input);
     Ok((
         rem_input,
         wtree::Step::from_time(time, pace2speed(get_pace(effort))),
@@ -137,7 +137,7 @@ fn is_float_digit(c: char) -> bool {
     c.is_ascii_digit() || c == '.'
 }
 
-// ---------------------------------------
+// --- tests -----------------------------
 
 #[cfg(test)]
 mod tests {
@@ -183,5 +183,17 @@ mod tests {
         let (_, w) = parse_workout(&normalize_input("2min I + 3*(1min H + 5min jg)")).unwrap();
         assert_eq!(w.nodes.len(), 2);
         assert_abs_diff_eq!(w.time(), ((2 + 3 * (1 + 5)) * 60) as f32, epsilon = 0.1);
+    }
+
+    #[test]
+    fn summaries() {
+        assert_eq!(
+            summarize("3.2E + 2 * (1.6T + 1 min rest) + 30min E + 2 * (1.6T + 1 min rest) + 3.2E"),
+            "18.1 km, 1:41 h".to_string()
+        );
+        assert_eq!(
+            summarize("2E + 2 * ( 5 * (4 min I + 90s jg)) + 2 E"),
+            "15.9 km, 1:19 h".to_string()
+        );
     }
 }

@@ -79,12 +79,12 @@ fn main() {
     env_logger::init();
 
     if let Some(w) = matches.value_of("workout") {
-        workout::log_parse(w);
+        println!("{}", workout::summarize(w));
     }
 
     if let Some(workouts_file) = matches.value_of("file") {
         for w in read_workout_file(Path::new(workouts_file)) {
-            workout::log_parse(&w);
+            println!("{}", workout::summarize(&w));
         }
     }
 }

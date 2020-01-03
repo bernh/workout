@@ -5,4 +5,4 @@ mod config;
 mod parse;
 mod wtree;
 
-pub use parse::log_parse;
+pub use parse::summarize;
