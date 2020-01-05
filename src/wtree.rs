@@ -1,10 +1,12 @@
+use std::fmt;
+
 #[derive(Debug, Clone)]
 pub enum RunType {
     Distance,
     Time,
 }
 
-pub trait DistanceAndTime {
+pub trait DistanceAndTime: fmt::Display {
     fn time(&self) -> f32;
     fn distance(&self) -> f32;
 }
@@ -52,6 +54,27 @@ impl DistanceAndTime for Step {
     }
 }
 
+impl fmt::Display for Step {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        match self.rtype {
+            RunType::Distance => write!(
+                f,
+                "{:.*} km @ {} min/km pace",
+                1,
+                self.distance() / 1000.0,
+                speed2pace(self.speed)
+            ),
+            RunType::Time => write!(
+                f,
+                "{}:{:02} min @ {} min/km pace",
+                self.time() as i32 / 60,
+                self.time() as i32 % 60,
+                speed2pace(self.speed)
+            ),
+        }
+    }
+}
+
 impl Workout {
     pub fn new(reps: i32) -> Workout {
         Workout {
@@ -59,14 +82,6 @@ impl Workout {
             nodes: Vec::new(),
         }
     }
-
-    //pub fn add<T: DistanceAndTime + 'static>(&mut self, node: T) {
-    //self.nodes.push(Box::new(node));
-    //}
-
-    // pub fn pace<T: DistanceAndTime>(&self) -> String {
-    //     speed2pace(self.distance() / self.speed())
-    // }
 }
 
 impl DistanceAndTime for Workout {
@@ -75,6 +90,16 @@ impl DistanceAndTime for Workout {
     }
     fn distance(&self) -> f32 {
         self.reps as f32 * self.nodes.iter().fold(0.0, |acc, ref x| acc + x.distance())
+    }
+}
+
+impl fmt::Display for Workout {
+    fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        writeln!(f, "\n{} * (", self.reps)?;
+        for n in self.nodes.iter() {
+            writeln!(f, "  {}", n)?;
+        }
+        writeln!(f, ")")
     }
 }
 

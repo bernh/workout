@@ -6,6 +6,7 @@ use log::*;
 use nom::{
     branch::alt,
     bytes::complete::{tag, take_while},
+    character::complete::digit1,
     character::is_digit,
     multi::separated_list,
     sequence::{terminated, tuple},
@@ -14,10 +15,11 @@ use nom::{
 
 pub fn summarize(input: &str) -> String {
     let (_, w) = parse_workout(&normalize_input(input)).unwrap();
+    info!("{}", w);
     format!(
         "{:.*} km, {}:{:02} h",
         1,
-        w.distance() as f32 / 1000.0,
+        w.distance() / 1000.0,
         w.time() as i32 / 3600,
         w.time() as i32 % 3600 / 60
     )
@@ -31,13 +33,8 @@ fn normalize_input(input: &str) -> String {
 // --- nom parser combinator functions ---
 pub fn parse_workout(input: &str) -> IResult<&str, wtree::Workout> {
     // <rep> "*" "("<parts>")"
-    let (rem_input, (rep, _, _, parts, _)) = tuple((
-        take_while(|c: char| c.is_digit(10)),
-        tag("*"),
-        tag("("),
-        parse_parts,
-        tag(")"),
-    ))(input)?;
+    let (rem_input, (rep, _, _, parts, _)) =
+        tuple((digit1, tag("*"), tag("("), parse_parts, tag(")")))(input)?;
     info!("New Workout from: {}", input);
     let mut w = Workout::new(rep.parse::<i32>().unwrap());
     w.nodes = parts;
