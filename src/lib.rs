@@ -5,4 +5,5 @@ mod config;
 mod parse;
 mod wtree;
 
-pub use parse::summarize;
+pub use crate::config::init;
+pub use crate::parse::summarize;

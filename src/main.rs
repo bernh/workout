@@ -1,6 +1,8 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
 
+use workout;
+
 use std::env;
 use std::error::Error;
 use std::fs::File;
@@ -54,6 +56,15 @@ fn main() {
                 .takes_value(true),
         )
         .arg(
+            Arg::with_name("config")
+                .short("c")
+                .long("config")
+                .value_name("CONFIG")
+                .required(true)
+                .help("Configuration file")
+                .takes_value(true),
+        )
+        .arg(
             Arg::with_name("file")
                 .short("f")
                 .long("file")
@@ -77,6 +88,10 @@ fn main() {
         2 | _ => env::set_var("RUST_LOG", "debug"),
     }
     env_logger::init();
+
+    if let Some(c) = matches.value_of("config") {
+        workout::init(c);
+    }
 
     if let Some(w) = matches.value_of("workout") {
         println!("{}", workout::summarize(w));
