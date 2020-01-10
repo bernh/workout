@@ -60,7 +60,8 @@ fn main() {
                 .short("c")
                 .long("config")
                 .value_name("CONFIG")
-                .required(true)
+                .required(false)
+                .default_value("paces.toml")
                 .help("Configuration file")
                 .takes_value(true),
         )
