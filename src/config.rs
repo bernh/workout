@@ -17,7 +17,11 @@ lazy_static! {
 }
 
 pub fn init(c: &str) {
-    // TODO: is there a better way to pass information to the lazy_static than via env variables?
+    // Is there a better way to pass information to the lazy_static than via env variables?
+    // One option would be to run clap a second time - see also 
+    // https://github.com/PhilipDaniels/rust-config-example/blob/master/src/configuration.rs for an example.
+    //
+    // Anyway, it's probably good enough for this use case. init does not need to be thread save.
     env::set_var("WORKOUT_CONFIG_FILE", c);
 }
 
