@@ -21,7 +21,7 @@ fn write_file(data: &[u8], path: &Path) {
         Err(why) => panic!(
             "couldn't create {}: {}",
             path.display(),
-            Error::description(&why)
+            why
         ),
         Ok(file) => file,
     };
@@ -29,7 +29,7 @@ fn write_file(data: &[u8], path: &Path) {
         panic!(
             "couldn't write to {}: {}",
             path.display(),
-            Error::description(&why)
+            why
         );
     };
 }
@@ -37,7 +37,7 @@ fn write_file(data: &[u8], path: &Path) {
 fn read_workout_file(path: &Path) -> Vec<String> {
     // Open the path in read-only mode, returns `io::Result<File>`
     let file = match File::open(&path) {
-        Err(why) => panic!("couldn't open {}: {}", path.display(), why.description()),
+        Err(why) => panic!("couldn't open {}: {}", path.display(), why),
         Ok(file) => file,
     };
     BufReader::new(file).lines().map(|x| x.unwrap()).collect()

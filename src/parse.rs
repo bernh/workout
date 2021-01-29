@@ -2,7 +2,7 @@ use crate::config::get_pace;
 use crate::wtree;
 use crate::wtree::{pace2speed, DistanceAndTime, Step, Workout};
 
-use log::*;
+use log::info;
 use nom::{
     branch::alt,
     bytes::complete::{tag, take_while},
@@ -17,11 +17,14 @@ pub fn summarize(input: &str) -> String {
     let (_, w) = parse_workout(&normalize_input(input)).unwrap();
     info!("{}", w);
     format!(
-        "{:.*} km, {}:{:02} h",
+        "{}\n{:.*} km, {}:{:02} h, {}:{:02} min/km",
+        input,
         1,
         w.distance() / 1000.0,
         w.time() as i32 / 3600,
-        w.time() as i32 % 3600 / 60
+        w.time() as i32 % 3600 / 60,
+        (w.time() / (w.distance() / 1000.0)) as i32 / 60,
+        (w.time() / (w.distance() / 1000.0)) as i32 % 60,
     )
 }
 
@@ -123,6 +126,7 @@ fn parse_effort(input: &str) -> IResult<&str, &str> {
         tag("CV"),
         tag("H"),
         tag("I"),
+        tag("R"),
         tag("jg"),
         tag("jog"),
         tag("rst"),
@@ -180,6 +184,13 @@ mod tests {
         let (_, w) = parse_workout(&normalize_input("2min I + 3*(1min H + 5min jg)")).unwrap();
         assert_eq!(w.nodes.len(), 2);
         assert_abs_diff_eq!(w.time(), ((2 + 3 * (1 + 5)) * 60) as f32, epsilon = 0.1);
+    }
+
+    #[test]
+    fn repeats_2() {
+        let (_, w) = parse_workout(&normalize_input("10 min E + 5 * (3 min I + 2 min jg) + 6 * (1 min R + 2 min jg)")).unwrap();
+        assert_eq!(w.nodes.len(), 3);
+        assert_abs_diff_eq!(w.time(), ((10 + 5 * (3 + 2) + 6 * (1 + 2)) * 60) as f32, epsilon = 0.1);
     }
 
     #[test]

@@ -39,6 +39,7 @@ pub fn get_pace(effort: &str) -> String {
         T = "4:30"
         I = "4:00"
         H = "4:00"
+        R = "3:30"
         jg = "8:00"
         jog = "8:00"
         rst = "15:00"
