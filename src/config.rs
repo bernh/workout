@@ -32,7 +32,7 @@ pub fn get_pace(effort: &str) -> String {
 
 #[cfg(test)]
 pub fn get_pace(effort: &str) -> String {
-    let inline_config = r#"
+    let inline_config = r##"
         [paces]
         E = "6:00"
         M = "5:00"
@@ -44,7 +44,7 @@ pub fn get_pace(effort: &str) -> String {
         jog = "8:00"
         rst = "15:00"
         rest = "15:00"
-        "#;
+        "##;
     let config: toml::Value = toml::from_str(inline_config).unwrap();
     let pace = config["paces"][effort].as_str().unwrap();
     pace.to_string()
