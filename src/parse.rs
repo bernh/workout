@@ -8,7 +8,7 @@ use nom::{
     bytes::complete::{tag, take_while},
     character::complete::digit1,
     character::is_digit,
-    multi::separated_list,
+    multi::separated_list1,
     sequence::{terminated, tuple},
     IResult,
 };
@@ -45,7 +45,7 @@ pub fn parse_workout(input: &str) -> IResult<&str, wtree::Workout> {
 }
 
 fn parse_parts(input: &str) -> IResult<&str, Vec<Box<dyn wtree::DistanceAndTime>>> {
-    separated_list(tag("+"), parse_part)(input)
+    separated_list1(tag("+"), parse_part)(input)
 }
 
 fn parse_part(input: &str) -> IResult<&str, Box<dyn wtree::DistanceAndTime>> {
@@ -188,9 +188,16 @@ mod tests {
 
     #[test]
     fn repeats_2() {
-        let (_, w) = parse_workout(&normalize_input("10 min E + 5 * (3 min I + 2 min jg) + 6 * (1 min R + 2 min jg)")).unwrap();
+        let (_, w) = parse_workout(&normalize_input(
+            "10 min E + 5 * (3 min I + 2 min jg) + 6 * (1 min R + 2 min jg)",
+        ))
+        .unwrap();
         assert_eq!(w.nodes.len(), 3);
-        assert_abs_diff_eq!(w.time(), ((10 + 5 * (3 + 2) + 6 * (1 + 2)) * 60) as f32, epsilon = 0.1);
+        assert_abs_diff_eq!(
+            w.time(),
+            ((10 + 5 * (3 + 2) + 6 * (1 + 2)) * 60) as f32,
+            epsilon = 0.1
+        );
     }
 
     #[test]
