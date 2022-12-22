@@ -17,8 +17,7 @@ pub fn summarize(input: &str) -> String {
     let (_, w) = parse_workout(&normalize_input(input)).unwrap();
     info!("{}", w);
     format!(
-        "{}\n{:.*} km, {}:{:02} h, {}:{:02} min/km",
-        input,
+        "{:.*} km, {}:{:02} h, {}:{:02} min/km",
         1,
         w.distance() / 1000.0,
         w.time() as i32 / 3600,
@@ -204,11 +203,11 @@ mod tests {
     fn summaries() {
         assert_eq!(
             summarize("3.2E + 2 * (1.6T + 1 min rest) + 30min E + 2 * (1.6T + 1 min rest) + 3.2E"),
-            "18.1 km, 1:41 h".to_string()
+            "18.1 km, 1:41 h, 5:36 min/km".to_string()
         );
         assert_eq!(
             summarize("2E + 2 * ( 5 * (4 min I + 90s jg)) + 2 E"),
-            "15.9 km, 1:19 h".to_string()
+            "15.9 km, 1:19 h, 4:58 min/km".to_string()
         );
     }
 }
