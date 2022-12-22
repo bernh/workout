@@ -4,7 +4,7 @@ use std::io::Read;
 
 // extern crates
 use lazy_static::*;
-use toml;
+
 
 lazy_static! {
     static ref CONFIG: toml::Value = {

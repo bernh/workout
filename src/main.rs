@@ -2,7 +2,7 @@
 #![allow(unused_imports)]
 
 use clap::Command;
-use workout;
+
 
 use std::env;
 use std::error::Error;
@@ -14,11 +14,11 @@ use std::path::{Path, PathBuf};
 
 // external crates
 use clap::{arg, Parser};
-use env_logger;
-use log;
+
+
 
 fn write_file(data: &[u8], path: &Path) {
-    let mut file = match File::create(&path) {
+    let mut file = match File::create(path) {
         Err(why) => panic!("couldn't create {}: {}", path.display(), why),
         Ok(file) => file,
     };
@@ -63,11 +63,11 @@ fn main() {
     match cli.verbose {
         0 => { /* do nothing */ }
         1 => env::set_var("RUST_LOG", "info"),
-        2 | _ => env::set_var("RUST_LOG", "debug"),
+        _ => env::set_var("RUST_LOG", "debug"),
     }
     env_logger::init();
 
-    let c = cli.config.unwrap_or(PathBuf::from("paces.toml"));
+    let c = cli.config.unwrap_or_else(|| PathBuf::from("paces.toml"));
     workout::init(c.as_path().to_str().unwrap()); // XXX there should be a nicer way
 
     if let Some(w) = cli.workout {

@@ -86,10 +86,10 @@ impl Workout {
 
 impl DistanceAndTime for Workout {
     fn time(&self) -> f32 {
-        self.reps as f32 * self.nodes.iter().fold(0.0, |acc, ref x| acc + x.time())
+        self.reps as f32 * self.nodes.iter().fold(0.0, |acc, x| acc + x.time())
     }
     fn distance(&self) -> f32 {
-        self.reps as f32 * self.nodes.iter().fold(0.0, |acc, ref x| acc + x.distance())
+        self.reps as f32 * self.nodes.iter().fold(0.0, |acc, x| acc + x.distance())
     }
 }
 
@@ -113,7 +113,7 @@ pub fn pace2speed(pace: &str) -> f32 {
 pub fn speed2pace(speed: f32) -> String {
     let seconds = (1000.0 / speed) as i32;
     let mins = seconds / 60;
-    let remaining = seconds % 60 as i32;
+    let remaining = seconds % 60_i32;
     format!("{}:{:02}", mins, remaining)
 }
 
