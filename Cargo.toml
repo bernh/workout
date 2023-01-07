@@ -4,6 +4,9 @@ version = "0.2.0"
 authors = ["Bernhard Leiner <bleiner@gmail.com>"]
 edition = "2021"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
 clap = {version = "4.0.29", features = ["derive"]}
 log = "0.4.17"
@@ -13,3 +16,6 @@ nom = "7.1.1"
 approx = "0.5.1"
 toml = "0.5.10"
 lazy_static = "1.4.0"
+
+wasm-bindgen = "0.2"
+
