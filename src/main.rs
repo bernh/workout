@@ -3,7 +3,6 @@
 
 use clap::Command;
 
-
 use std::env;
 use std::error::Error;
 use std::fs::File;
@@ -14,8 +13,6 @@ use std::path::{Path, PathBuf};
 
 // external crates
 use clap::{arg, Parser};
-
-
 
 fn write_file(data: &[u8], path: &Path) {
     let mut file = match File::create(path) {

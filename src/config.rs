@@ -3,28 +3,20 @@ use std::fs::File;
 use std::io::Read;
 
 // extern crates
-use lazy_static::*;
+use once_cell::sync::OnceCell;
 
-
-lazy_static! {
-    static ref CONFIG: toml::Value = {
-        let c = env::var("WORKOUT_CONFIG_FILE").expect("Environment variable not set");
-        let mut f = File::open(c).expect("Couldn't open config file");
-        let mut s = String::new();
-        f.read_to_string(&mut s).unwrap();
-        toml::from_str(&s).unwrap()
-    };
-}
+static CONFIG: OnceCell<toml::Value> = OnceCell::new();
 
 pub fn init(c: &str) {
-    // Is there a better way to pass information to the lazy_static than via env variables?
-    // Anyway, it's probably good enough for this use case. init does not need to be thread save.
-    env::set_var("WORKOUT_CONFIG_FILE", c);
+    let mut f = File::open(c).expect("Couldn't open config file");
+    let mut s = String::new();
+    f.read_to_string(&mut s).unwrap();
+    CONFIG.set(toml::from_str(&s).unwrap()).unwrap();
 }
 
 #[cfg(not(test))]
 pub fn get_pace(effort: &str) -> String {
-    (*CONFIG["paces"][effort].as_str().unwrap()).to_string()
+    (CONFIG.get().unwrap()["paces"][effort].as_str().unwrap()).to_string()
 }
 
 #[cfg(test)]
