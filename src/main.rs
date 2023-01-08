@@ -8,6 +8,7 @@ use std::error::Error;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;
+use std::io::Read;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
@@ -65,7 +66,10 @@ fn main() {
     env_logger::init();
 
     let c = cli.config.unwrap_or_else(|| PathBuf::from("paces.toml"));
-    workout::init(c.as_path().to_str().unwrap()); // XXX there should be a nicer way
+    let mut f = File::open(c).expect("Couldn't open config file");
+    let mut s = String::new();
+    f.read_to_string(&mut s).unwrap();
+    workout::init(toml::from_str(&s).unwrap());
 
     if let Some(w) = cli.workout {
         println!("{}", workout::summarize(w.as_str()));

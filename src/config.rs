@@ -1,17 +1,10 @@
-use std::env;
-use std::fs::File;
-use std::io::Read;
-
 // extern crates
 use once_cell::sync::OnceCell;
 
 static CONFIG: OnceCell<toml::Value> = OnceCell::new();
 
-pub fn init(c: &str) {
-    let mut f = File::open(c).expect("Couldn't open config file");
-    let mut s = String::new();
-    f.read_to_string(&mut s).unwrap();
-    CONFIG.set(toml::from_str(&s).unwrap()).unwrap();
+pub fn init(paces: toml::Value) {
+    CONFIG.set(paces).unwrap();
 }
 
 #[cfg(not(test))]
