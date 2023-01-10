@@ -73,12 +73,12 @@ fn parse_distance_step(input: &str) -> IResult<&str, wtree::Step> {
     if distance < 100.0 {
         Ok((
             rem_input,
-            wtree::Step::from_distance(distance * 1000.0, pace2speed(&get_pace(effort))),
+            wtree::Step::from_distance(distance * 1000.0, pace2speed(get_pace(effort))),
         ))
     } else {
         Ok((
             rem_input,
-            wtree::Step::from_distance(distance, pace2speed(&get_pace(effort))),
+            wtree::Step::from_distance(distance, pace2speed(get_pace(effort))),
         ))
     }
 }
@@ -89,7 +89,7 @@ fn parse_time_step(input: &str) -> IResult<&str, wtree::Step> {
     info!("New time step from: {}", input);
     Ok((
         rem_input,
-        wtree::Step::from_time(time, pace2speed(&get_pace(effort))),
+        wtree::Step::from_time(time, pace2speed(get_pace(effort))),
     ))
 }
 

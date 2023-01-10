@@ -1,35 +1,34 @@
+use std::collections::HashMap;
+
 // extern crates
 use once_cell::sync::OnceCell;
 
-static CONFIG: OnceCell<toml::Value> = OnceCell::new();
+static CONFIG: OnceCell<HashMap<String, String>> = OnceCell::new();
 
-pub fn init(paces: toml::Value) {
+pub fn init(paces: HashMap<String, String>) {
     CONFIG.set(paces).unwrap();
 }
 
 #[cfg(not(test))]
-pub fn get_pace(effort: &str) -> String {
-    (CONFIG.get().unwrap()["paces"][effort].as_str().unwrap()).to_string()
+pub fn get_pace(effort: &str) -> &str {
+    CONFIG.get().unwrap()[effort].as_str()
 }
 
 #[cfg(test)]
-pub fn get_pace(effort: &str) -> String {
-    let inline_config = r##"
-        [paces]
-        E = "6:00"
-        M = "5:00"
-        T = "4:30"
-        I = "4:00"
-        H = "4:00"
-        R = "3:30"
-        jg = "8:00"
-        jog = "8:00"
-        rst = "15:00"
-        rest = "15:00"
-        "##;
-    let config: toml::Value = toml::from_str(inline_config).unwrap();
-    let pace = config["paces"][effort].as_str().unwrap();
-    pace.to_string()
+pub fn get_pace(effort: &str) -> &str {
+    let inline_config: HashMap<&str, &str> = HashMap::from([
+        ("E", "6:00"),
+        ("M", "5:00"),
+        ("T", "4:30"),
+        ("I", "4:00"),
+        ("H", "4:00"),
+        ("R", "3:30"),
+        ("jg", "8:00"),
+        ("jog", "8:00"),
+        ("rst", "15:00"),
+        ("rest", "15:00"),
+    ]);
+    inline_config[effort]
 }
 
 #[cfg(test)]

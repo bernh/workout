@@ -2,7 +2,9 @@
 #![allow(unused_imports)]
 
 use clap::Command;
+use serde::{Deserialize, Serialize};
 
+use std::collections::HashMap;
 use std::env;
 use std::error::Error;
 use std::fs::File;
@@ -54,6 +56,11 @@ struct Cli {
     verbose: u8,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+struct Config {
+    paces: HashMap<String, String>,
+}
+
 fn main() {
     let cli = Cli::parse();
 
@@ -69,7 +76,8 @@ fn main() {
     let mut f = File::open(c).expect("Couldn't open config file");
     let mut s = String::new();
     f.read_to_string(&mut s).unwrap();
-    workout::init(toml::from_str(&s).unwrap());
+    let config: Config = toml::from_str(&s).unwrap();
+    workout::init(config.paces);
 
     if let Some(w) = cli.workout {
         println!("{}", workout::summarize(w.as_str()));
