@@ -14,6 +14,12 @@ pub fn get_pace(effort: &str) -> &str {
     CONFIG.get().unwrap()[effort].as_str()
 }
 
+#[cfg(not(test))]
+pub fn get_intensities() -> Vec<String> {
+    CONFIG.get().unwrap().keys().cloned().collect()
+}
+
+// unit tests use a hard-coded config
 #[cfg(test)]
 pub fn get_pace(effort: &str) -> &str {
     let inline_config: HashMap<&str, &str> = HashMap::from([
@@ -29,6 +35,12 @@ pub fn get_pace(effort: &str) -> &str {
         ("rest", "15:00"),
     ]);
     inline_config[effort]
+}
+
+#[cfg(test)]
+pub fn get_intensities() -> Vec<String> {
+    let intensities = vec!["E", "M", "T", "I", "H", "R", "jg", "jog", "rst", "rest"];
+    intensities.iter().map(|s| s.to_string()).collect()
 }
 
 #[cfg(test)]

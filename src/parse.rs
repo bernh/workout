@@ -1,4 +1,4 @@
-use crate::config::get_pace;
+use crate::config::{get_intensities, get_pace};
 use crate::wtree;
 use crate::wtree::{pace2speed, DistanceAndTime, Step, Workout};
 
@@ -8,9 +8,10 @@ use nom::{
     bytes::complete::{tag, take_while},
     character::complete::digit1,
     character::is_digit,
+    error::{Error, ErrorKind, ParseError},
     multi::separated_list1,
     sequence::{terminated, tuple},
-    IResult,
+    Err, IResult,
 };
 
 pub fn summarize(input: &str) -> String {
@@ -114,23 +115,21 @@ fn parse_time(input: &str) -> IResult<&str, f32> {
 }
 
 fn parse_effort(input: &str) -> IResult<&str, &str> {
-    // TODO: drop this compile time list and allow everything that has a pace according to the config
-    alt((
-        tag("E"),
-        tag("M"),
-        tag("Tempo"),
-        tag("T"),
-        tag("HM"),
-        tag("M"),
-        tag("CV"),
-        tag("H"),
-        tag("I"),
-        tag("R"),
-        tag("jg"),
-        tag("jog"),
-        tag("rst"),
-        tag("rest"),
-    ))(input)
+    // the alt combinator requires its alternaitve parsers during compile time. Since
+    // we like to enable the definition during runtime in the config, we have to reimplement it
+
+    for i in get_intensities() {
+        match tag(i.as_str())(input) {
+            Ok((rem_input, effort)) => return Ok((rem_input, effort)),
+            Err(Err::Error((_, ErrorKind::Tag))) => (),
+            _ => (),
+        }
+    }
+    // no match found
+    Err(Err::Error(Error::new(
+        "Intensity not found",
+        ErrorKind::Tag,
+    )))
 }
 
 fn is_float_digit(c: char) -> bool {
