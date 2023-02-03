@@ -1,6 +1,7 @@
 <!-- simple test html file for running via wasm in the browser -->
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type"/>
   </head>
@@ -9,30 +10,21 @@
       import init, {wasm_init, wasm_summarize} from './pkg/workout.js';
 
       async function run() {
+        var paces = {
+            "Easy" : "5:40",
+            "Tempo" : "4:35",
+            "jog" : "6:10",
+        };
+
         // WASM module init
         await init();
-        // call exported functions
-        var paces = {
-            "E" : "5:20",
-            "M" : "4:37",
-            "HM" : "4:20",
-            "T" : "4:15",
-            "CV" : "4:05",
-            "I" : "3:55",
-            "H" : "3:55",
-            "R" : "3:40",
-            "jg" : "5:40",
-            "jog" : "5:40",
-            "rst" : "15:00",
-            "rest" : "15:00",
-        };
         wasm_init(paces);
-        console.log(wasm_summarize("10 E"));
+        console.log(wasm_summarize("10 Easy"));
 
         // re-init WASM module and re-set the pace configuration
         await init();
         wasm_init(paces);
-        console.log(wasm_summarize("20 min T"));
+        console.log(wasm_summarize("1 Easy + 20 min Tempo + 1 Easy"));
       }
 
       run();
