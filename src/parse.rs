@@ -30,6 +30,8 @@ pub fn summarize(input: &str) -> String {
 
 fn normalize_input(input: &str) -> String {
     let norm: String = input.split_whitespace().collect();
+    // top level may be list of parts or a repetion. Normalize to always start with a
+    // repetition
     format!("1*({})", norm)
 }
 
@@ -45,6 +47,7 @@ pub fn parse_workout(input: &str) -> IResult<&str, wtree::Workout> {
 }
 
 fn parse_parts(input: &str) -> IResult<&str, Vec<Box<dyn wtree::DistanceAndTime>>> {
+    // part, { "+", part }
     separated_list1(tag("+"), parse_part)(input)
 }
 
