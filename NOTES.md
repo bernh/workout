@@ -19,3 +19,11 @@ restriction therefore a local http server is needed. Easiest way to setup a loca
 server:
 
     python -m http.server
+
+
+# Github Codespace
+
+## Terminal
+
+Looks like a Ubuntu Linux container running in the azure cloud.
+Installing rust and rustup possible without problems.
