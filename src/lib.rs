@@ -1,7 +1,3 @@
-#![allow(dead_code)]
-#![allow(unused_imports)]
-
-use serde_wasm_bindgen;
 use wasm_bindgen::prelude::*;
 
 // declare internal modules

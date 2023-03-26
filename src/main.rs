@@ -1,12 +1,7 @@
-#![allow(dead_code)]
-#![allow(unused_imports)]
-
-use clap::Command;
 use serde::{Deserialize, Serialize};
 
 use std::collections::HashMap;
 use std::env;
-use std::error::Error;
 use std::fs::File;
 use std::io::BufRead;
 use std::io::BufReader;

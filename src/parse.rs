@@ -1,16 +1,15 @@
 use crate::config::{get_intensities, get_pace};
 use crate::wtree;
-use crate::wtree::{pace2speed, DistanceAndTime, Step, Workout};
+use crate::wtree::{pace2speed, DistanceAndTime, Workout};
 
 use log::info;
 use nom::{
     branch::alt,
     bytes::complete::{tag, take_while},
     character::complete::digit1,
-    character::is_digit,
-    error::{Error, ErrorKind, ParseError},
+    error::{Error, ErrorKind},
     multi::separated_list1,
-    sequence::{terminated, tuple},
+    sequence::tuple,
     Err, IResult,
 };
 
