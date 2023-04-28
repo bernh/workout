@@ -12,6 +12,7 @@ use std::path::{Path, PathBuf};
 // external crates
 use clap::{arg, Parser};
 
+#[allow(dead_code)]
 fn write_file(data: &[u8], path: &Path) {
     let mut file = match File::create(path) {
         Err(why) => panic!("couldn't create {}: {}", path.display(), why),
