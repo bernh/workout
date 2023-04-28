@@ -54,13 +54,7 @@ fn parse_parts(input: &str) -> IResult<&str, Vec<RunPart>> {
 
 fn parse_part(input: &str) -> IResult<&str, RunPart> {
     // <workout> | <step>
-    // TODO: try alt
-    let res_w = parse_workout(input);
-    if let Ok((rem_input, workout)) = res_w {
-        return Ok((rem_input, workout));
-    } else {
-        parse_step(input)
-    }
+    alt((parse_workout, parse_step))(input)
 }
 
 fn parse_step(input: &str) -> IResult<&str, wtree::RunPart> {
