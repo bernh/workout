@@ -1,6 +1,7 @@
 use crate::config::{get_intensities, get_pace};
+use crate::utils::pace2speed;
 use crate::wtree;
-use crate::wtree::{pace2speed, RunPart};
+use crate::wtree::RunPart;
 
 use log::info;
 use nom::{
@@ -69,12 +70,12 @@ fn parse_distance_step(input: &str) -> IResult<&str, wtree::RunPart> {
     if distance < 100.0 {
         Ok((
             rem_input,
-            wtree::RunPart::part_from_distance(distance * 1000.0, pace2speed(get_pace(effort))),
+            wtree::RunPart::part_from_distance(distance * 1000.0, pace2speed(&get_pace(effort))),
         ))
     } else {
         Ok((
             rem_input,
-            wtree::RunPart::part_from_distance(distance, pace2speed(get_pace(effort))),
+            wtree::RunPart::part_from_distance(distance, pace2speed(&get_pace(effort))),
         ))
     }
 }
@@ -85,7 +86,7 @@ fn parse_time_step(input: &str) -> IResult<&str, wtree::RunPart> {
     info!("New time step from: {}", input);
     Ok((
         rem_input,
-        wtree::RunPart::part_from_time(time, pace2speed(get_pace(effort))),
+        wtree::RunPart::part_from_time(time, pace2speed(&get_pace(effort))),
     ))
 }
 

@@ -47,6 +47,10 @@ struct Cli {
     #[arg(short, long)]
     config: Option<PathBuf>,
 
+    // start egui
+    #[arg(short, long)]
+    gui: bool,
+
     // verbose level
     #[arg(short, long, action = clap::ArgAction::Count)]
     verbose: u8,
@@ -83,5 +87,9 @@ fn main() {
         for w in read_workout_file(workouts_file) {
             println!("{}", workout::summarize(&w));
         }
+    }
+
+    if cli.gui {
+        workout::gui_create();
     }
 }

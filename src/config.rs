@@ -1,22 +1,23 @@
 use std::collections::HashMap;
+use std::sync::Mutex;
 
-// extern crates
-use once_cell::sync::OnceCell;
+use once_cell::sync::Lazy;
 
-static CONFIG: OnceCell<HashMap<String, String>> = OnceCell::new();
+static CONFIG: Lazy<Mutex<HashMap<String, String>>> = Lazy::new(|| Mutex::new(HashMap::new()));
 
 pub fn init(paces: HashMap<String, String>) {
-    CONFIG.set(paces).unwrap();
+    let mut config = CONFIG.lock().unwrap();
+    *config = paces;
 }
 
 #[cfg(not(test))]
-pub fn get_pace(effort: &str) -> &str {
-    CONFIG.get().unwrap()[effort].as_str()
+pub fn get_pace(effort: &str) -> String {
+    CONFIG.lock().unwrap()[effort].clone()
 }
 
 #[cfg(not(test))]
 pub fn get_intensities() -> Vec<String> {
-    CONFIG.get().unwrap().keys().cloned().collect()
+    CONFIG.lock().unwrap().keys().cloned().collect()
 }
 
 // unit tests use a hard-coded config
