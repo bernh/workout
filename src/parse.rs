@@ -10,22 +10,27 @@ use nom::{
     character::complete::digit1,
     error::{Error, ErrorKind},
     multi::separated_list1,
+    number::complete::float,
     sequence::tuple,
     Err, IResult,
 };
 
-pub fn summarize(input: &str) -> String {
-    let (_, w) = parse_workout(&normalize_input(input)).unwrap();
-    info!("{}", w);
-    format!(
-        "{:.*} km, {}:{:02} h, {}:{:02} min/km",
-        1,
-        w.calc_distance() / 1000.0,
-        w.calc_time() as i32 / 3600,
-        w.calc_time() as i32 % 3600 / 60,
-        (w.calc_time() / (w.calc_distance() / 1000.0)) as i32 / 60,
-        (w.calc_time() / (w.calc_distance() / 1000.0)) as i32 % 60,
-    )
+pub fn summarize(input: &str) -> Option<String> {
+    match parse_workout(&normalize_input(input)) {
+        Ok((_, w)) => {
+            info!("{}", w);
+            Some(format!(
+                "{:.*} km, {}:{:02} h, {}:{:02} min/km",
+                1,
+                w.calc_distance() / 1000.0,
+                w.calc_time() as i32 / 3600,
+                w.calc_time() as i32 % 3600 / 60,
+                (w.calc_time() / (w.calc_distance() / 1000.0)) as i32 / 60,
+                (w.calc_time() / (w.calc_distance() / 1000.0)) as i32 % 60,
+            ))
+        }
+        Err(_) => None,
+    }
 }
 
 fn normalize_input(input: &str) -> String {
@@ -68,6 +73,7 @@ fn parse_distance_step(input: &str) -> IResult<&str, wtree::RunPart> {
     let (rem_input, (distance, effort)) = tuple((parse_distance, parse_effort))(input)?;
     info!("New distance step from: {}", input);
     if distance < 100.0 {
+        // distances below 100 meters (or above 100 km) will be misinterpreted
         Ok((
             rem_input,
             wtree::RunPart::part_from_distance(distance * 1000.0, pace2speed(&get_pace(effort))),
@@ -92,22 +98,28 @@ fn parse_time_step(input: &str) -> IResult<&str, wtree::RunPart> {
 
 fn parse_distance(input: &str) -> IResult<&str, f32> {
     let (input, distance) = take_while(is_float_digit)(input)?;
-    Ok((input, distance.parse::<f32>().unwrap()))
+    match float(distance) {
+        Ok((_, d)) => Ok((input, d)),
+        e @ Err(_) => e,
+    }
 }
 
 fn parse_time(input: &str) -> IResult<&str, f32> {
     let (input, (time, unit)) =
         tuple((take_while(is_float_digit), alt((tag("min"), tag("s")))))(input)?;
-    Ok((
-        input,
-        time.parse::<f32>().unwrap() * {
-            if unit.contains("min") {
-                60.0
-            } else {
-                1.0
-            }
-        },
-    ))
+    match float(time) {
+        Ok((_, t)) => Ok((
+            input,
+            t * {
+                if unit.contains("min") {
+                    60.0
+                } else {
+                    1.0
+                }
+            },
+        )),
+        e @ Err(_) => e,
+    }
 }
 
 fn parse_effort(input: &str) -> IResult<&str, &str> {
@@ -209,12 +221,19 @@ mod tests {
     #[test]
     fn summaries() {
         assert_eq!(
-            summarize("3.2E + 2 * (1.6T + 1 min rest) + 30min E + 2 * (1.6T + 1 min rest) + 3.2E"),
+            summarize("3.2E + 2 * (1.6T + 1 min rest) + 30min E + 2 * (1.6T + 1 min rest) + 3.2E")
+                .unwrap(),
             "18.1 km, 1:41 h, 5:36 min/km".to_string()
         );
         assert_eq!(
-            summarize("2E + 2 * ( 5 * (4 min I + 90s jg)) + 2 E"),
+            summarize("2E + 2 * ( 5 * (4 min I + 90s jg)) + 2 E").unwrap(),
             "15.9 km, 1:19 h, 4:58 min/km".to_string()
         );
+    }
+
+    #[test]
+    fn summary_invalid_inputs() {
+        // basically make sure that we are not crashing with invalid input
+        assert_eq!(summarize("bla"), None);
     }
 }

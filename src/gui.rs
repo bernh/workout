@@ -64,7 +64,7 @@ impl eframe::App for WorkoutApp {
 
             ui.heading("Summary");
             config::init(paces_to_strings(&self.config));
-            ui.label(format!("{}", parse::summarize(&self.workout)));
+            ui.label(parse::summarize(&self.workout).unwrap_or("invalid workout".to_string()));
         });
     }
 }

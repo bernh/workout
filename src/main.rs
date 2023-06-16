@@ -80,16 +80,22 @@ fn main() {
     workout::init(config.paces);
 
     if let Some(w) = cli.workout {
-        println!("{}", workout::summarize(w.as_str()));
+        println!(
+            "{}",
+            workout::summarize(w.as_str()).unwrap_or("invalid workout".to_string())
+        );
     }
 
     if let Some(workouts_file) = cli.file {
         for w in read_workout_file(workouts_file) {
-            println!("{}", workout::summarize(&w));
+            println!(
+                "{}",
+                workout::summarize(&w).unwrap_or("invalid workout".to_string())
+            );
         }
     }
 
     if cli.gui {
-        workout::gui_create();
+        workout::gui_create().unwrap();
     }
 }

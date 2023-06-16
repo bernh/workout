@@ -20,5 +20,5 @@ pub fn wasm_init(paces: JsValue) {
 
 #[wasm_bindgen]
 pub fn wasm_summarize(input: &str) -> String {
-    parse::summarize(input)
+    parse::summarize(input).unwrap_or("invalid workout".to_string())
 }

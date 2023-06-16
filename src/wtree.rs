@@ -114,7 +114,7 @@ impl fmt::Display for RunPart {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::utils::*;
+    use crate::utils::pace2speed;
     use approx::assert_abs_diff_eq;
 
     #[test]
