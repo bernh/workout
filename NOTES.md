@@ -25,3 +25,8 @@ restriction therefore a local http server is needed. Easiest way to setup a loca
 server:
 
     python -m http.server
+
+This is what the `serve.sh` script is doing.
+
+# egui
+

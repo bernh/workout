@@ -1,7 +1,7 @@
 use assert_cmd::Command;
 
 #[test]
-fn cli_workout() -> () {
+fn cli_workout() {
     let mut cmd = Command::cargo_bin("workout").unwrap();
     cmd.arg("-c")
         .arg("tests/paces.toml")

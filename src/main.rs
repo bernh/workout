@@ -47,13 +47,15 @@ struct Cli {
     #[arg(short, long)]
     config: Option<PathBuf>,
 
-    // start egui
-    #[arg(short, long)]
-    gui: bool,
-
     // verbose level
     #[arg(short, long, action = clap::ArgAction::Count)]
     verbose: u8,
+
+    // egui
+    #[cfg(feature = "egui")]
+    #[arg(short, long)]
+    egui: bool,
+
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -95,7 +97,8 @@ fn main() {
         }
     }
 
-    if cli.gui {
+    #[cfg(feature = "egui")]
+    if cli.egui {
         workout::gui_create().unwrap();
     }
 }
