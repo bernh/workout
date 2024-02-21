@@ -40,7 +40,7 @@ pub fn get_pace(effort: &str) -> &str {
 
 #[cfg(test)]
 pub fn get_intensities() -> Vec<String> {
-    let intensities = vec!["E", "M", "T", "I", "H", "R", "jg", "jog", "rst", "rest"];
+    let intensities = ["E", "M", "T", "I", "H", "R", "jg", "jog", "rst", "rest"];
     intensities.iter().map(|s| s.to_string()).collect()
 }
 
