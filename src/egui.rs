@@ -19,8 +19,10 @@ pub fn gui_create() -> eframe::Result<()> {
 pub fn gui_create() {
     // Redirect `log` message to `console.log` and friends:
     eframe::WebLogger::init(log::LevelFilter::Debug).ok();
-
-    let web_options = eframe::WebOptions::default();
+    let web_options = eframe::WebOptions {
+        max_size_points: egui::Vec2 { x: 800.0, y: 500.0 },
+        ..Default::default()
+    };
 
     wasm_bindgen_futures::spawn_local(async {
         eframe::WebRunner::new()
