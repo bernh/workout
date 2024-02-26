@@ -40,6 +40,14 @@ pub fn gui_create() {
 struct WorkoutApp {
     config: HashMap<String, f32>,
     workout: String,
+    tmp: Tmp, // used for intermediate, temporary gui data
+}
+
+#[derive(Default)]
+struct Tmp {
+    new_pace: String,
+    new_intensity: String,
+    remove_config: String,
 }
 
 impl WorkoutApp {
@@ -52,7 +60,8 @@ impl WorkoutApp {
                 ("I".to_owned(), pace2speed("4:00")),
                 ("R".to_owned(), pace2speed("3:30")),
             ]),
-            workout: "5 E + 3 * (1 I + 2 min rst) + 3 E".to_owned(),
+            workout: "5 E + 3 * (1 I + 2 min E) + 3 E".to_owned(),
+            tmp: Tmp::default(),
         }
     }
 }
@@ -68,16 +77,14 @@ fn paces_to_strings(input: &HashMap<String, f32>) -> HashMap<String, String> {
 impl eframe::App for WorkoutApp {
     /// Called each time the UI needs repainting, which may be many times per second.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        let mut remove_config: String = "".to_owned();
-
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.horizontal(|ui| {
                 ui.vertical(|ui| {
-                    ui.heading("Paces");
+                    ui.heading("Intensities");
                     for (k, v) in self.config.iter_mut() {
                         ui.horizontal(|ui| {
                             if ui.button("🗙").clicked() {
-                                remove_config = k.clone(); // schedule for removal
+                                self.tmp.remove_config = k.clone(); // schedule for removal
                             }
                             ui.add(
                                 egui::Slider::new(v, 1.0..=8.0)
@@ -90,21 +97,41 @@ impl eframe::App for WorkoutApp {
                     }
                 });
                 ui.vertical(|ui| {
-                    ui.heading("Workout");
-                    ui.text_edit_singleline(&mut self.workout);
+                    ui.heading("Add new intensity");
 
-                    ui.heading("Summary");
-                    config::init(paces_to_strings(&self.config));
-                    ui.label(
-                        parse::summarize(&self.workout).unwrap_or("invalid workout".to_string()),
-                    );
+                    ui.horizontal(|ui| {
+                        ui.label("Intensity name:");
+                        ui.text_edit_singleline(&mut self.tmp.new_intensity);
+                    });
+                    ui.horizontal(|ui| {
+                        ui.label("Pace (min:sec/km):");
+                        ui.text_edit_singleline(&mut self.tmp.new_pace);
+                    });
+                    if ui.button("➕").clicked() {
+                        self.config.insert(
+                            self.tmp.new_intensity.clone(),
+                            pace2speed(&self.tmp.new_pace),
+                        );
+                        self.tmp.new_intensity = "".to_owned();
+                        self.tmp.new_pace = "".to_owned();
+                    }
                 });
+            });
+
+            ui.vertical(|ui| {
+                ui.heading("Workout");
+                ui.text_edit_singleline(&mut self.workout);
+
+                ui.heading("Summary");
+                config::init(paces_to_strings(&self.config));
+                ui.label(parse::summarize(&self.workout).unwrap_or("invalid workout".to_string()));
             });
         });
 
         // processing
-        if self.config.contains_key(&remove_config) {
-            self.config.remove(&remove_config);
+        if self.config.contains_key(&self.tmp.remove_config) {
+            self.config.remove(&self.tmp.remove_config);
+            self.tmp.remove_config = "".to_owned();
         }
     }
 }
