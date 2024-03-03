@@ -54,11 +54,11 @@ impl WorkoutApp {
     fn new(_cc: &eframe::CreationContext<'_>) -> Self {
         Self {
             config: HashMap::from([
-                ("E".to_owned(), pace2speed("5:40")),
-                ("M".to_owned(), pace2speed("5:00")),
-                ("T".to_owned(), pace2speed("4:30")),
-                ("I".to_owned(), pace2speed("4:00")),
-                ("R".to_owned(), pace2speed("3:30")),
+                ("E".to_owned(), pace2speed("5:40").unwrap()),
+                ("M".to_owned(), pace2speed("5:00").unwrap()),
+                ("T".to_owned(), pace2speed("4:30").unwrap()),
+                ("I".to_owned(), pace2speed("4:00").unwrap()),
+                ("R".to_owned(), pace2speed("3:30").unwrap()),
             ]),
             workout: "5 E + 3 * (1 I + 2 min E) + 3 E".to_owned(),
             tmp: Tmp::default(),
@@ -90,7 +90,7 @@ impl eframe::App for WorkoutApp {
                                 egui::Slider::new(v, 1.0..=8.0)
                                     .text(k)
                                     .custom_formatter(|n, _| speed2pace(n as f32))
-                                    .custom_parser(|s| Some(f64::from(pace2speed(s))))
+                                    .custom_parser(|s| pace2speed(s).map(f64::from))
                                     .trailing_fill(true),
                             );
                         });
@@ -108,12 +108,13 @@ impl eframe::App for WorkoutApp {
                         ui.text_edit_singleline(&mut self.tmp.new_pace);
                     });
                     if ui.button("➕").clicked() {
-                        self.config.insert(
-                            self.tmp.new_intensity.clone(),
-                            pace2speed(&self.tmp.new_pace),
-                        );
-                        self.tmp.new_intensity = "".to_owned();
-                        self.tmp.new_pace = "".to_owned();
+                        if let Some(pace) = pace2speed(&self.tmp.new_pace) {
+                            self.config.insert(self.tmp.new_intensity.clone(), pace);
+                            self.tmp.new_pace = "".to_owned();
+                            self.tmp.new_intensity = "".to_owned();
+                        } else {
+                            self.tmp.new_pace = "".to_owned();
+                        }
                     }
                 });
             });

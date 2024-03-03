@@ -76,12 +76,15 @@ fn parse_distance_step(input: &str) -> IResult<&str, wtree::RunPart> {
         // distances below 100 meters (or above 100 km) will be misinterpreted
         Ok((
             rem_input,
-            wtree::RunPart::part_from_distance(distance * 1000.0, pace2speed(&get_pace(effort))),
+            wtree::RunPart::part_from_distance(
+                distance * 1000.0,
+                pace2speed(&get_pace(effort)).unwrap(),
+            ),
         ))
     } else {
         Ok((
             rem_input,
-            wtree::RunPart::part_from_distance(distance, pace2speed(&get_pace(effort))),
+            wtree::RunPart::part_from_distance(distance, pace2speed(&get_pace(effort)).unwrap()),
         ))
     }
 }
@@ -92,7 +95,7 @@ fn parse_time_step(input: &str) -> IResult<&str, wtree::RunPart> {
     info!("New time step from: {}", input);
     Ok((
         rem_input,
-        wtree::RunPart::part_from_time(time, pace2speed(&get_pace(effort))),
+        wtree::RunPart::part_from_time(time, pace2speed(&get_pace(effort)).unwrap()),
     ))
 }
 

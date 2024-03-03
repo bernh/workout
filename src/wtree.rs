@@ -121,8 +121,11 @@ mod tests {
     fn totals() {
         let mut t = RunPart::new_workout(2);
         if let RunPart::Workout { ref mut nodes, .. } = t {
-            nodes.push(RunPart::part_from_distance(1000.0, pace2speed("5:00")));
-            nodes.push(RunPart::part_from_time(240.0, pace2speed("4:00")));
+            nodes.push(RunPart::part_from_distance(
+                1000.0,
+                pace2speed("5:00").unwrap(),
+            ));
+            nodes.push(RunPart::part_from_time(240.0, pace2speed("4:00").unwrap()));
             assert_abs_diff_eq!(t.calc_time(), 1080.0);
             assert_abs_diff_eq!(t.calc_distance(), 4000.0);
         }
