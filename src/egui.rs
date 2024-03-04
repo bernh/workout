@@ -77,55 +77,57 @@ fn paces_to_strings(input: &HashMap<String, f32>) -> HashMap<String, String> {
 impl eframe::App for WorkoutApp {
     /// Called each time the UI needs repainting, which may be many times per second.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        egui::SidePanel::left("left_panel").show(ctx, |ui| {
+            ui.vertical(|ui| {
+                ui.heading("Intensities");
+                for (k, v) in self.config.iter_mut() {
+                    ui.horizontal(|ui| {
+                        if ui.button("🗙").clicked() {
+                            self.tmp.remove_config = k.clone(); // schedule for removal
+                        }
+                        ui.add(
+                            egui::Slider::new(v, 1.0..=8.0)
+                                .text(k)
+                                .custom_formatter(|n, _| speed2pace(n as f32))
+                                .custom_parser(|s| pace2speed(s).map(f64::from))
+                                .trailing_fill(true),
+                        );
+                    });
+                }
+
+                ui.heading("Add new intensity");
+
+                ui.horizontal(|ui| {
+                    ui.label("Intensity name:");
+                    ui.text_edit_singleline(&mut self.tmp.new_intensity);
+                });
+                ui.horizontal(|ui| {
+                    ui.label("Pace (min:sec/km):");
+                    ui.text_edit_singleline(&mut self.tmp.new_pace);
+                });
+                if ui.button("➕").clicked() {
+                    if let Some(pace) = pace2speed(&self.tmp.new_pace) {
+                        self.config.insert(self.tmp.new_intensity.clone(), pace);
+                        self.tmp.new_pace = "".to_owned();
+                        self.tmp.new_intensity = "".to_owned();
+                    } else {
+                        self.tmp.new_pace = "".to_owned();
+                    }
+                }
+            });
+        });
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.horizontal(|ui| {
                 ui.vertical(|ui| {
-                    ui.heading("Intensities");
-                    for (k, v) in self.config.iter_mut() {
-                        ui.horizontal(|ui| {
-                            if ui.button("🗙").clicked() {
-                                self.tmp.remove_config = k.clone(); // schedule for removal
-                            }
-                            ui.add(
-                                egui::Slider::new(v, 1.0..=8.0)
-                                    .text(k)
-                                    .custom_formatter(|n, _| speed2pace(n as f32))
-                                    .custom_parser(|s| pace2speed(s).map(f64::from))
-                                    .trailing_fill(true),
-                            );
-                        });
-                    }
+                    ui.heading("Workout");
+                    ui.text_edit_singleline(&mut self.workout);
+
+                    ui.heading("Summary");
+                    config::init(paces_to_strings(&self.config));
+                    ui.label(
+                        parse::summarize(&self.workout).unwrap_or("invalid workout".to_string()),
+                    );
                 });
-                ui.vertical(|ui| {
-                    ui.heading("Add new intensity");
-
-                    ui.horizontal(|ui| {
-                        ui.label("Intensity name:");
-                        ui.text_edit_singleline(&mut self.tmp.new_intensity);
-                    });
-                    ui.horizontal(|ui| {
-                        ui.label("Pace (min:sec/km):");
-                        ui.text_edit_singleline(&mut self.tmp.new_pace);
-                    });
-                    if ui.button("➕").clicked() {
-                        if let Some(pace) = pace2speed(&self.tmp.new_pace) {
-                            self.config.insert(self.tmp.new_intensity.clone(), pace);
-                            self.tmp.new_pace = "".to_owned();
-                            self.tmp.new_intensity = "".to_owned();
-                        } else {
-                            self.tmp.new_pace = "".to_owned();
-                        }
-                    }
-                });
-            });
-
-            ui.vertical(|ui| {
-                ui.heading("Workout");
-                ui.text_edit_singleline(&mut self.workout);
-
-                ui.heading("Summary");
-                config::init(paces_to_strings(&self.config));
-                ui.label(parse::summarize(&self.workout).unwrap_or("invalid workout".to_string()));
             });
         });
 
