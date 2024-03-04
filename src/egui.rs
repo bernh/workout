@@ -77,6 +77,15 @@ fn paces_to_strings(input: &HashMap<String, f32>) -> HashMap<String, String> {
 impl eframe::App for WorkoutApp {
     /// Called each time the UI needs repainting, which may be many times per second.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
+            ui.heading("Instructions");
+            ui.label("Workouts can be constructed from the defined intensities.");
+            ui.label("Distances >= 100 are interpreted as meters, otherwise km.");
+            ui.label("Durations can be specified by adding 'min'");
+            ui.label("");
+            ui.label("Example: 2E + 5 * (400 R + 2 min rst) + 10 min E");
+        });
+
         egui::SidePanel::left("left_panel").show(ctx, |ui| {
             ui.vertical(|ui| {
                 ui.heading("Intensities");
@@ -116,6 +125,7 @@ impl eframe::App for WorkoutApp {
                 }
             });
         });
+
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.horizontal(|ui| {
                 ui.vertical(|ui| {
