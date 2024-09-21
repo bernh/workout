@@ -11,7 +11,7 @@ pub fn gui_create() -> eframe::Result<()> {
     eframe::run_native(
         "Running Workout",
         native_options,
-        Box::new(|cc| Box::new(WorkoutApp::new(cc))),
+        Box::new(|cc| Ok(Box::new(WorkoutApp::new(cc)))),
     )
 }
 
