@@ -20,7 +20,7 @@ pub fn gui_create() {
     // Redirect `log` message to `console.log` and friends:
     eframe::WebLogger::init(log::LevelFilter::Debug).ok();
     let web_options = eframe::WebOptions {
-        max_size_points: egui::Vec2 { x: 800.0, y: 500.0 },
+        max_size_points: egui::Vec2 { x: 500.0, y: 500.0 },
         ..Default::default()
     };
 
@@ -54,13 +54,14 @@ impl WorkoutApp {
     fn new(_cc: &eframe::CreationContext<'_>) -> Self {
         Self {
             config: HashMap::from([
-                ("E".to_owned(), pace2speed("5:40").unwrap()),
-                ("M".to_owned(), pace2speed("5:00").unwrap()),
-                ("T".to_owned(), pace2speed("4:30").unwrap()),
+                ("rst".to_owned(), pace2speed("10:00").unwrap()),
+                ("E".to_owned(), pace2speed("5:30").unwrap()),
+                ("M".to_owned(), pace2speed("4:50").unwrap()),
+                ("T".to_owned(), pace2speed("4:25").unwrap()),
                 ("I".to_owned(), pace2speed("4:00").unwrap()),
-                ("R".to_owned(), pace2speed("3:30").unwrap()),
+                ("R".to_owned(), pace2speed("3:45").unwrap()),
             ]),
-            workout: "5 E + 3 * (1 I + 2 min E) + 3 E".to_owned(),
+            workout: "2E + 8 * (400 R + 90s rst) + 10 min E".to_owned(),
             tmp: Tmp::default(),
         }
     }
@@ -83,7 +84,7 @@ impl eframe::App for WorkoutApp {
             ui.label("Distances >= 100 are interpreted as meters, otherwise km.");
             ui.label("Durations can be specified by adding 'min'");
             ui.label("");
-            ui.label("Example: 2E + 5 * (400 R + 2 min rst) + 10 min E");
+            ui.label("Example: 2E + 8 * (400 R + 90s rst) + 10 min E");
         });
 
         egui::SidePanel::left("left_panel").show(ctx, |ui| {

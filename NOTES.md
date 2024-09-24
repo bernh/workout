@@ -16,6 +16,8 @@ within a browser.
 See https://rustwasm.github.io/docs/wasm-bindgen/reference/deployment.html and
 https://rustwasm.github.io/docs/wasm-bindgen/examples/without-a-bundler.html
 
+Attention: Looks like wasm-pack creates a .gitignore file inside the pkg directory. Has to
+be considered when commiting and pushing to a webpage.
 
 
 ## Test

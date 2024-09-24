@@ -17,11 +17,11 @@
       import init, {wasm_init, wasm_summarize, wasm_gui_create} from './pkg/workout.js';
 
       async function run() {
-        var paces = {
-            "Easy" : "5:40",
-            "Tempo" : "4:35",
-            "jog" : "6:10",
-        };
+        // var paces = {
+        //     "Easy" : "5:40",
+        //     "Tempo" : "4:35",
+        //     "jog" : "6:10",
+        // };
 
         // WASM module init
         // await init();
@@ -40,7 +40,7 @@
       run();
     </script>
 
-    <canvas id="egui_canvas_id" width="800" height="500"> </canvas>
+    <canvas id="egui_canvas_id" width="500" height="500"> </canvas>
     
   </body>
 </html>
