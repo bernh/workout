@@ -81,8 +81,8 @@ impl eframe::App for WorkoutApp {
         egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
             ui.heading("Instructions");
             ui.label("Workouts can be constructed from the defined intensities.");
-            ui.label("Distances >= 100 are interpreted as meters, otherwise km.");
-            ui.label("Durations can be specified by adding 'min'");
+            ui.label("Distance numbers >= 100 are interpreted as meters, otherwise km.");
+            ui.label("Durations can be specified by adding 'min' or 's'");
             ui.label("");
             ui.label("Example: 2E + 8 * (400 R + 90s rst) + 10 min E");
         });
